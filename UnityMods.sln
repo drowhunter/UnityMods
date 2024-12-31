@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MmfReader", "MmfReader\MmfReader.csproj", "{E81B8DE0-EFCF-4426-B73D-69BA51A4E804}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistanceTelemetryMod", "DistanceTelemetryMod\DistanceTelemetryMod.csproj", "{AFC95631-2530-473A-A1B8-39321336390D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Depth3DUnhinged", "Depth3DUnhinged\Depth3DUnhinged.csproj", "{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPlugin", "CustomPlugin\CustomPlugin.csproj", "{4373E1E0-DD26-455A-83CC-B265EB07A5E2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E81B8DE0-EFCF-4426-B73D-69BA51A4E804}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E81B8DE0-EFCF-4426-B73D-69BA51A4E804}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E81B8DE0-EFCF-4426-B73D-69BA51A4E804}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E81B8DE0-EFCF-4426-B73D-69BA51A4E804}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFC95631-2530-473A-A1B8-39321336390D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFC95631-2530-473A-A1B8-39321336390D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFC95631-2530-473A-A1B8-39321336390D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFC95631-2530-473A-A1B8-39321336390D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4373E1E0-DD26-455A-83CC-B265EB07A5E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4373E1E0-DD26-455A-83CC-B265EB07A5E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4373E1E0-DD26-455A-83CC-B265EB07A5E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4373E1E0-DD26-455A-83CC-B265EB07A5E2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -33,14 +33,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\Depth3D VR App\BepInEx\core\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony, Version=2.13.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\_Apps\Depth3D VR App\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp_publicized">
-      <HintPath>..\..\..\Depth3D VR App\VR Companion App_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
+    <Reference Include="Assembly-CSharp_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\_Apps\Depth3D VR App\VR Companion App_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\..\..\Depth3D VR App\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>E:\_Apps\Depth3D VR App\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -51,20 +53,22 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\Depth3D VR App\VR Companion App_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>E:\_Apps\Depth3D VR App\VR Companion App_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\Depth3D VR App\VR Companion App_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>E:\_Apps\Depth3D VR App\VR Companion App_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\Depth3D VR App\VR Companion App_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>E:\_Apps\Depth3D VR App\VR Companion App_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CamAxisLock.cs" />
-    <Compile Include="MutexWrapper.cs" />
     <Compile Include="SD3DPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -8,7 +8,7 @@ namespace com.drowmods.depth3dunhinged
     [HarmonyPatch(typeof(CamAxisLock))]
     internal class CamAxisLockPatches 
     {
-        static Mutex mutex;
+        //static Mutex mutex;
         static MemoryMappedFile mmf;
         static MemoryMappedViewAccessor accessor;
         static int _packetId;
@@ -17,7 +17,7 @@ namespace com.drowmods.depth3dunhinged
         [HarmonyPatch(nameof(CamAxisLock.Start))]
         public static void Start_Postfix(CamAxisLock __instance)
         {
-            mutex = new Mutex(false, "Global\\CamAxisLock");
+            //mutex = new Mutex(false, "Global\\CamAxisLock");
             mmf = MemoryMappedFile.CreateOrOpen("FPGeneric", Marshal.SizeOf(typeof(FreePieIO6Dof)));
             
             accessor = mmf.CreateViewAccessor();
