@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistanceTelemetryMod", "Dis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Depth3DUnhinged", "Depth3DUnhinged\Depth3DUnhinged.csproj", "{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPlugin", "CustomPlugin\CustomPlugin.csproj", "{4373E1E0-DD26-455A-83CC-B265EB07A5E2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4373E1E0-DD26-455A-83CC-B265EB07A5E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4373E1E0-DD26-455A-83CC-B265EB07A5E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4373E1E0-DD26-455A-83CC-B265EB07A5E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4373E1E0-DD26-455A-83CC-B265EB07A5E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
