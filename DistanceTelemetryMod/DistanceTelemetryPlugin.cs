@@ -1,11 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
-
 using HarmonyLib;
-
-using System.IO.MemoryMappedFiles;
-
-using UnityEngine;
 
 namespace com.drowmods.DistanceTelemetryMod
 {
