@@ -1,7 +1,6 @@
-﻿using com.drowmods.DistanceTelemetryMod;
-
-using System.IO.MemoryMappedFiles;
+﻿using System.Net;
 using System.Runtime.InteropServices;
+using TelemetryLibrary;
 
 namespace MmfReader
 {
@@ -11,53 +10,32 @@ namespace MmfReader
 
         static void Main(string[] args)
         {
-            new Thread(static () =>
+            new Thread(static async () =>
             {
-                Console.WriteLine("Start Read Thread");                
+                var udp = new UdpTelemetry<DistanceTelemetryData>(new UdpTelemetryConfig
+                {
+                    ReceiveAddress = new IPEndPoint(IPAddress.Any, 12345)
+                });
 
+
+                Console.WriteLine("Start Read Thread");
+                var ms = new MemoryStream();
+                
                 while (!cts.Token.IsCancellationRequested)
                 {
-#pragma warning disable CA1416 // Validate platform compatibility
-                //using (var mmf = MemoryMappedFile.CreateOrOpen("FPGeneric", Marshal.SizeOf(typeof(FreePieIO6Dof))))
-                //{
-                //    using (var accessor = mmf.CreateViewAccessor())
-                //    {
-                //        var freepie6dof = new FreePieIO6Dof();
-                //        accessor.Read(0, out freepie6dof);
+                    var telem = await udp.ReceiveAsync(cts.Token);
 
-                //        for (var i = 1; i < 4; i++)
-                //        {
-                //            Console.SetCursorPosition(0, i);
-                //            ClearCurrentConsoleLine();
-                //        }
-                //        Console.WriteLine($"Yaw: {freepie6dof.Yaw:F4} Pitch: {freepie6dof.Pitch:F4} Roll: {freepie6dof.Roll:F4}");
-                //        Console.WriteLine($"x: {freepie6dof.X:F4}  y:  {freepie6dof.Y:F4} z: {freepie6dof.Z:F4}");
-                //    }
-
-                //}
-
-                using (var mmf = MemoryMappedFile.CreateOrOpen("FPGeneric", Marshal.SizeOf(typeof(DistanceTelemetryData))))
+                    for (var i = 1; i < 4; i++)
                     {
-                        using (var accessor = mmf.CreateViewAccessor())
-                        {
-                            var data = new DistanceTelemetryData();
-                            accessor.Read(0, out data);
-
-                            for (var i = 1; i < 4; i++)
-                            {
-                                Console.SetCursorPosition(0, i);
-                                ClearCurrentConsoleLine();
-                            }
-                            Console.WriteLine($"Yaw: {data.Yaw:F4} Pitch: {data.Pitch:F4} Roll: {data.Roll:F4}");
-                            Console.WriteLine($"x: {data.X:F4}  y:  {data.Y:F4} z: {data.Z:F4}");
-                        }
-
+                        Console.SetCursorPosition(0, i);
+                        ClearCurrentConsoleLine();
                     }
-#pragma warning restore CA1416 // Validate platform compatibility
+                    const int align = 10;
+                    Console.WriteLine($"Y: {telem.Yaw, align:F4} P: {telem.Pitch,align:F4} R: {telem.Roll,align:F4}");
+                    Console.WriteLine($"x: {telem.X,align:F4} y: {telem.Y,align:F4} z: {telem.Z,align:F4}");
 
+                    Thread.Sleep(16);
 
-                    Thread.Sleep(16);                 
-                    
 
                 }
             }).Start();
@@ -67,6 +45,15 @@ namespace MmfReader
             cts.Cancel();
             Console.WriteLine("Quitting ..");
             Console.ReadKey();
+        }
+
+        private static T bytesToStruct<T>(byte[] bytes) where T : struct
+        {
+            GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+            T theStructure = Marshal.PtrToStructure<T>(handle.AddrOfPinnedObject());
+            handle.Free();
+
+            return theStructure;
         }
 
         public static void ClearCurrentConsoleLine()
@@ -79,16 +66,14 @@ namespace MmfReader
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct FreePieIO6Dof
+    public struct DistanceTelemetryData
     {
-        public int DataId;
-
-        public float Yaw;
-        public float Pitch;
-        public float Roll;
-
+        public int PacketId;
         public float X;
         public float Y;
         public float Z;
+        public float Yaw;
+        public float Pitch;
+        public float Roll;        
     }
 }

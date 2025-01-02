@@ -1,16 +1,16 @@
 ﻿using HarmonyLib;
-using System.IO.MemoryMappedFiles;
+
 using System.Runtime.InteropServices;
-using System.Threading;
+
+using TelemetryLibrary;
 
 namespace com.drowmods.depth3dunhinged
 {
     [HarmonyPatch(typeof(CamAxisLock))]
     internal class CamAxisLockPatches 
     {
-        //static Mutex mutex;
-        static MemoryMappedFile mmf;
-        static MemoryMappedViewAccessor accessor;
+        
+        static MmfTelemetry<FreePieIO6Dof> mmf;
         static int _packetId;
 
         [HarmonyPostfix]
@@ -18,9 +18,9 @@ namespace com.drowmods.depth3dunhinged
         public static void Start_Postfix(CamAxisLock __instance)
         {
             //mutex = new Mutex(false, "Global\\CamAxisLock");
-            mmf = MemoryMappedFile.CreateOrOpen("FPGeneric", Marshal.SizeOf(typeof(FreePieIO6Dof)));
-            
-            accessor = mmf.CreateViewAccessor();
+            mmf = new MmfTelemetry<FreePieIO6Dof>(new MmfTelemetryConfig { Name = "FPGeneric" });            
+            System.Net.Sockets.UdpClient udpClient = new System.Net.Sockets.UdpClient();
+            udpClient.ReceiveAsync();
             _packetId = 0;
 
         }
@@ -32,7 +32,7 @@ namespace com.drowmods.depth3dunhinged
         {
             var cam = __instance.tr_cam;
 
-            var data = new FreePieIO6Dof
+            mmf.Send(new FreePieIO6Dof
             {
                 DataId = _packetId,
                 X = cam.position.x,
@@ -41,10 +41,8 @@ namespace com.drowmods.depth3dunhinged
                 Yaw = hemiCircle(cam.transform.localEulerAngles.y),
                 Pitch = hemiCircle(cam.transform.localEulerAngles.x),
                 Roll = -hemiCircle(cam.transform.localEulerAngles.z)
-            };
+            });
 
-            accessor.Write(0, ref data);
-                
             _packetId++;
         }
 
@@ -60,9 +58,7 @@ namespace com.drowmods.depth3dunhinged
         {
             FileLog.Log("Cleaning Up");           
 
-            mmf?.Dispose();
-
-            accessor?.Dispose();
+            mmf?.Dispose();            
         }
 
     }

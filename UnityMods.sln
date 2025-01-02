@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistanceTelemetryMod", "Dis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Depth3DUnhinged", "Depth3DUnhinged\Depth3DUnhinged.csproj", "{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TelemetryLib", "TelemetryLibrary\TelemetryLib.shproj", "{EEB444E9-0B1F-467D-B01C-EDBA291BC941}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		TelemetryLibrary\TelemetryLibrary.projitems*{afc95631-2530-473a-a1b8-39321336390d}*SharedItemsImports = 4
+		TelemetryLibrary\TelemetryLibrary.projitems*{b9fca8df-c60f-4a9c-aad0-f7ed71e0adc5}*SharedItemsImports = 4
+		TelemetryLibrary\TelemetryLibrary.projitems*{e81b8de0-efcf-4426-b73d-69ba51a4e804}*SharedItemsImports = 5
+		TelemetryLibrary\TelemetryLibrary.projitems*{eeb444e9-0b1f-467d-b01c-edba291bc941}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
