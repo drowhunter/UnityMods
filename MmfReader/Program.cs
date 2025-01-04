@@ -21,9 +21,9 @@ namespace MmfReader
                     ReceiveAddress = new IPEndPoint(IPAddress.Any, 12345)
                 });
 
-                var cs = new SelectorDictionary(10);//<DistanceTelemetryData>();
+                var cs = new SelectorDictionary<DistanceTelemetryData>(10);//();
 
-                var tlm = new DistanceTelemetryData();
+               // var tlm = new DistanceTelemetryData();
                 //cs.Add(tlm, _ => _.Finished, _ => _.isActiveAndEnabled);
                 //cs.Add(tlm, _ => _.Yaw, _ => _.Pitch, _ => _.Roll);
                 //cs.Add(tlm, _ => _.KPH, _ => _.Sway, _ => _.Boost, _ => _.Mass);
@@ -57,13 +57,17 @@ namespace MmfReader
                     cs.LogLine(telem, _ => _.Finished, _ => _.isActiveAndEnabled);
                     cs.LogLine(telem, _ => _.Yaw, _ => _.Pitch, _ => _.Roll);
                     cs.LogLine(telem, _ => _.KPH, _ => _.Sway, _ => _.Boost, _ => _.Mass);
-                    cs.LogLine(telem.Velocity, _ => _.X, _ => _.Y, _ => _.Z);
-                    cs.LogLine(telem.Accel, _ => _.X, _ => _.Y, _ => _.Z);
+                    Console.WriteLine();
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.Velocity), _ => _.Velocity.X, _ => _.Velocity.Y, _ => _.Velocity.Z);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.Accel), _ => _.Accel.X, _ => _.Accel.Y, _ => _.Accel.Z);
                     cs.LogLine(telem, _ => _.WingsEnabled, _ => _.WingsOpen);
-                    cs.LogLine(telem.TireFL, _ => _.IsInContact, _ => _.LocalPosition);
-                    cs.LogLine(telem.TireFR, _ => _.IsInContact, _ => _.LocalPosition);
-                    cs.LogLine(telem.TireBL, _ => _.IsInContact, _ => _.LocalPosition);
-                    cs.LogLine(telem.TireBR, _ => _.IsInContact, _ => _.LocalPosition);
+                    Console.WriteLine();
+                    Console.WriteLine("Tires\n");
+
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFL), _ => _.TireFL.IsInContact, _ => _.TireFL.LocalPosition);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFR), _ => _.TireFR.IsInContact, _ => _.TireFR.LocalPosition);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBL), _ => _.TireBL.IsInContact, _ => _.TireBL.LocalPosition);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBR), _ => _.TireBR.IsInContact, _ => _.TireBR.LocalPosition);
 
                     Thread.Sleep(16);
 
@@ -79,27 +83,33 @@ namespace MmfReader
         }
 
 
-        class SelectorDictionary
+        class SelectorDictionary<T>
         {
             private readonly int align;
 
-            private static Dictionary<string, Delegate> _selectors = new();
+            private static Dictionary<string, Func<T, object>> _selectors = new();
 
-            public SelectorDictionary(int align = 10)
+            public SelectorDictionary(int align = 7)
             {
                 this.align = align;
             }
 
 
-
-            public void LogLine<T>(T telem, params Expression<Func<T, object>>[] selectors)
+            public void LogLine(T telem, params Expression<Func<T, object>>[] selectors)
+            {
+                LogLine(telem, null, selectors);
+            }
+            public void LogLine(T telem,string label, params Expression<Func<T, object>>[] selectors)
             {
                 string line = "";
 
                 foreach (var selector in selectors)
                 {
+
                     var member = selector.Body as MemberExpression ?? ((UnaryExpression)selector.Body).Operand as MemberExpression;
                     var memberName = member.Member.Name;
+
+                    
                     Func<T, object> cs;
 
                     if (!_selectors.ContainsKey(memberName))
@@ -109,12 +119,15 @@ namespace MmfReader
                     }
                     else
                     {
-                        cs = (Func<T, object>)_selectors[memberName];
+                        cs = _selectors[memberName];
                     }
 
                     var value = cs(telem);
+                    //if((label?.Length ?? 0) > 0)
+                        //line += label + '\n' + new string('_', label?.Length ?? 0) + "\n\n";
 
-                    line += string.Format("{0}:\t{1," + align + ":F4}\t", memberName, value);
+
+                    line += string.Format("{2}{0}:\t{1," + align + ":F4}\t", memberName, value, label != null ? label + ".": "");
 
                 }
 
