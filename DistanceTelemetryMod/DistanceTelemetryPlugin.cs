@@ -48,6 +48,33 @@ namespace com.drowmods.DistanceTelemetryMod
 
     }
 
+    
+    //internal class GameManagerPatches
+    //{
+    //    static ManualLogSource log;
+
+    //    public GameManagerPatches()
+    //    {
+    //        log = Logger.CreateLogSource("GameManagerPatches");
+    //    }
+
+    //    [HarmonyPatch(typeof(GameManager), "FixedUpdate")]
+    //    private class GameManagerPatches_GameManager_FixedUpdate
+    //    {
+    //        public static bool blah = false;
+
+
+
+    //        private static void Postfix(GameManager __instance)
+    //        {
+    //            //DistanceTelemetryPlugin.Echo(nameof(GameManagerPatches_GameManager_FixedUpdate), "Postfix");
+    //            blah = GameManager.IsInGameModeScene_;
+    //            log.LogDebug("GameManagerPatches_GameManager_FixedUpdate IsInGameModeScene_" + blah);
+                
+    //        }
+    //    }
+
+    //}
 
     [HarmonyPatch(typeof(LocalPlayerControlledCar))]
     internal class LocalPlayerControlledCarPatches
@@ -85,7 +112,7 @@ namespace com.drowmods.DistanceTelemetryMod
             //playerEvents.Subscribe<Finished.Data>(data =>
             //{
             //    log.LogInfo("Finished.Data");
-            //});
+            //}); 
 
         }
 
@@ -100,7 +127,8 @@ namespace com.drowmods.DistanceTelemetryMod
             var cRigidbody = car.GetComponent<Rigidbody>();
             var car_logic = car.GetComponent<CarLogic>();
 
-            
+            //var ontrack = GameManager.IsInGameModeScene_;
+
 
             Quaternion rotation = cRigidbody.rotation;
             Vector3 eulerAngles = rotation.eulerAngles;
@@ -136,40 +164,22 @@ namespace com.drowmods.DistanceTelemetryMod
                 Velocity = localVelocity,                
                 Accel = lgforce,
                 Boost = car_logic.CarDirectives_.Boost_,
-                WingsEnabled = car_logic.Wings_.enabled,
+                //OnTrack = ontrack,
                 WingsOpen = car_logic.Wings_.WingsOpen_,
                 Mass = cRigidbody.mass,
                 Finished = car.PlayerDataLocal_.Finished_,
                 AllWheelsOnGround = car_logic.CarStats_.AllWheelsContacting_,
                 Grip = car_logic.CarDirectives_.Grip_,
                 isActiveAndEnabled = car.isActiveAndEnabled,
-                TireFL = new Tire { IsInContact = car_logic.CarStats_.WheelFL_.IsInContactSmooth_, LocalPosition = car_logic.CarStats_.WheelFL_.hubTrans_.localPosition.y },
-                TireFR = new Tire { IsInContact = car_logic.CarStats_.WheelFR_.IsInContactSmooth_, LocalPosition = car_logic.CarStats_.WheelFR_.hubTrans_.localPosition.y },
-                TireBL = new Tire { IsInContact = car_logic.CarStats_.wheelBL_.IsInContactSmooth_, LocalPosition = car_logic.CarStats_.wheelBL_.hubTrans_.localPosition.y },
-                TireBR = new Tire { IsInContact = car_logic.CarStats_.WheelBR_.IsInContactSmooth_, LocalPosition = car_logic.CarStats_.WheelBR_.hubTrans_.localPosition.y },
+                TireFL = new Tire { Contact = car_logic.CarStats_.WheelFL_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelFL_.hubTrans_.localPosition.y },
+                TireFR = new Tire { Contact = car_logic.CarStats_.WheelFR_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelFR_.hubTrans_.localPosition.y },
+                TireBL = new Tire { Contact = car_logic.CarStats_.wheelBL_.IsInContactSmooth_, Position = car_logic.CarStats_.wheelBL_.hubTrans_.localPosition.y },
+                TireBR = new Tire { Contact = car_logic.CarStats_.WheelBR_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelBR_.hubTrans_.localPosition.y },
             };
 
             udp.Send(data);
 
             _packetId++;
-
-            //log.LogInfo($"[{_packetId}] - VelocityX: {data.VelocityX:F4}, VelocityY: {data.VelocityY:F4}, VelocityZ: {data.VelocityZ:F4}, Yaw: {data.Yaw:F4}, Pitch: {data.Pitch:F4}, Roll: {data.Roll:F4}");
-            //log.LogInfo($"[{_packetId}] - KPH: {data.KPH:F4}, Yaw: {data.Yaw:F4}, Pitch: {data.Pitch:F4}, Roll: {data.Roll:F4}");
-            //log.LogInfo($"[{_packetId}] - KPH: {data.KPH:F4}, Yaw: {data.Yaw:F4}, Pitch: {data.Pitch:F4}, Roll: {data.Roll:F4}");
-            //log.LogInfo($"[{_packetId}] - VX: {data.Velocity.x:F4}, VY: {data.Velocity.y:F4}, VZ: {data.Velocity.z:F4}");
-            //log.LogInfo($"[{_packetId}] - Sway: {data.Sway:F4}, AccelX: {data.AccelX:F4}, AccelY: {data.AccelY:F4}, AccelZ: {data.AccelZ:F4}");
-            
-
-            //log.LogInfo($"[{_packetId}] - Boost: {data.Boost}, WingsEnabled: {data.WingsEnabled}, Mass: {data.Mass:F4}, Finished: {data.Finished}");
-            //log.LogInfo($"[{_packetId}] - AllWheelsOnGround: {data.AllWheelsOnGround}, isActiveAndEnabled: {data.isActiveAndEnabled}, Grip: {data.Grip}");
-
-            //log.LogInfo($"[{_packetId}] - TireFL: {data.TireFL.SuspensionDistance:F4}, TireFR: {data.TireFR.SuspensionDistance:F4}, TireBL: {data.TireBL.SuspensionDistance:F4}, TireBR: {data.TireBR.SuspensionDistance:F4}");
-
-            //log.LogInfo($"[{_packetId}] - TireFL: {data.TireFL.IsInContact}, TireFR: {data.TireFR.IsInContact}, TireBL: {data.TireBL.IsInContact}, TireBR: {data.TireBR.IsInContact}");
-
-            //log.LogInfo($"[{_packetId}] - TireFL: {data.TireFL.SpringForce:F4}, TireFR: {data.TireFR.SpringForce:F4}, TireBL: {data.TireBL.SpringForce:F4}, TireBR: {data.TireBR.SpringForce:F4}");
-
-            //log.LogInfo($"[{_packetId}] - TireFL: {data.TireFL.LocalPosition}, TireFR: {data.TireFR.LocalPosition}, TireBL: {data.TireBL.LocalPosition}, TireBR: {data.TireBR.LocalPosition}");
 
         }
 
@@ -199,7 +209,7 @@ namespace com.drowmods.DistanceTelemetryMod
         public Vector3 Velocity;        
         public Vector3 Accel;       
         public bool Boost;
-        public bool WingsEnabled;
+        //public bool OnTrack;
         public bool WingsOpen;
         public float Mass;
         public bool Finished;
@@ -214,7 +224,7 @@ namespace com.drowmods.DistanceTelemetryMod
 
     internal struct Tire
     {
-        public bool IsInContact;
-        public float LocalPosition;
+        public bool Contact;
+        public float Position;
     }
 }
