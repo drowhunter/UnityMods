@@ -21,55 +21,41 @@ namespace MmfReader
                     ReceiveAddress = new IPEndPoint(IPAddress.Any, 12345)
                 });
 
-                var cs = new SelectorDictionary<DistanceTelemetryData>(10);//();
+                var cs = new SelectorDictionary<DistanceTelemetryData>(10);
 
-               // var tlm = new DistanceTelemetryData();
-                //cs.Add(tlm, _ => _.Finished, _ => _.isActiveAndEnabled);
-                //cs.Add(tlm, _ => _.Yaw, _ => _.Pitch, _ => _.Roll);
-                //cs.Add(tlm, _ => _.KPH, _ => _.Sway, _ => _.Boost, _ => _.Mass);
-                //cs.Add(tlm, _ => _.Velocity.X, _ => _.Velocity.Y, _ => _.Velocity.Z);
-                //cs.Add(tlm, _ => _.Accel.X, _ => _.Accel.Y, _ => _.Accel.Z);
-
-                //cs.Add(tlm, _ => _.WingsEnabled, _ => _.WingsOpen);
-                //cs.Add(tlm, _ => _.TireFL.IsInContact, _ => _.TireFL.LocalPosition);
-                //cs.Add(tlm, _ => _.TireFR.IsInContact, _ => _.TireFR.LocalPosition);
-                //cs.Add(tlm, _ => _.TireBL.IsInContact, _ => _.TireBL.LocalPosition);
-                //cs.Add(tlm, _ => _.TireBR.IsInContact, _ => _.TireBR.LocalPosition);
-
+               
                 Console.WriteLine("Start Read Thread");
                 var ms = new MemoryStream();
                 
                 while (!cts.Token.IsCancellationRequested)
                 {
-                    var telem = await udp.ReceiveAsync(cts.Token);
+                    var telem = udp.Receive();
+                    for (var i = 1; i < 15; i++)
+                    {
+                        Console.SetCursorPosition(0, i);
+                        ClearCurrentConsoleLine();
+                    }
 
-                    //for (var i = 1; i < 30; i++)
-                    //{
-                    //    Console.SetCursorPosition(0, i);
-                    //    ClearCurrentConsoleLine();
-                    //}
-                    
                     Console.SetCursorPosition(0, 2);
                     const int align = 10;
 
                     //cs.Print(telem);
 
-                    cs.LogLine(telem, _ => _.Finished, _ => _.isActiveAndEnabled);
+                    cs.LogLine(telem, _ => _.Finished);
                     cs.LogLine(telem, _ => _.Yaw, _ => _.Pitch, _ => _.Roll);
-                    cs.LogLine(telem, _ => _.KPH, _ => _.Sway, _ => _.Boost, _ => _.Mass);
+                    cs.LogLine(telem, _ => _.KPH, _ => _.Sway, _ => _.Mass);
                     Console.WriteLine();
                     cs.LogLine(telem, nameof(DistanceTelemetryData.Velocity), _ => _.Velocity.X, _ => _.Velocity.Y, _ => _.Velocity.Z);
                     cs.LogLine(telem, nameof(DistanceTelemetryData.Accel), _ => _.Accel.X, _ => _.Accel.Y, _ => _.Accel.Z);
-                    cs.LogLine(telem, _ => _.WingsEnabled, _ => _.WingsOpen);
+                    cs.LogLine(telem, _ => _.WingsOpen, _ => _.Boost, _ => _.Grip, _ => _.AllWheelsOnGround);
                     Console.WriteLine();
                     Console.WriteLine("Tires\n");
 
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFL), _ => _.TireFL.IsInContact, _ => _.TireFL.LocalPosition);
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFR), _ => _.TireFR.IsInContact, _ => _.TireFR.LocalPosition);
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBL), _ => _.TireBL.IsInContact, _ => _.TireBL.LocalPosition);
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBR), _ => _.TireBR.IsInContact, _ => _.TireBR.LocalPosition);
-
-                    Thread.Sleep(16);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFL), _ => _.TireFL.Contact, _ => _.TireFL.Position);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFR), _ => _.TireFR.Contact, _ => _.TireFR.Position);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBL), _ => _.TireBL.Contact, _ => _.TireBL.Position);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBR), _ => _.TireBR.Contact, _ => _.TireBR.Position);
+                    
 
 
                 }
@@ -99,6 +85,7 @@ namespace MmfReader
             {
                 LogLine(telem, null, selectors);
             }
+
             public void LogLine(T telem,string label, params Expression<Func<T, object>>[] selectors)
             {
                 string line = "";
@@ -135,50 +122,6 @@ namespace MmfReader
             }
         }
 
-       
-
-        
-
-        public static void PrettyLog<T>(T telem) //where T : struct
-        {
-            var fields = typeof(T).GetFields();
-            const int align = 10;
-
-            foreach (var field in fields)
-            {
-                //if T is a number or string or bool, just print it
-                if (field.FieldType.IsPrimitive || field.FieldType == typeof(string))
-                {
-                    Console.Write($"{field.Name}: {field.GetValue(telem),align:F4}" + Environment.NewLine);
-                    
-                }
-                else
-                {
-                    //if T is a struct, recurse through it
-                    PrettyLog(field.GetValue(telem));
-                }
-               
-            }
-        }
-
-        private static void PrettyPrint<T>(T telem) where T : struct
-        {
-            Console.SetCursorPosition(0, 0);
-            //Console Write Json indented using System.Text.Json
-            Console.WriteLine(JsonSerializer.Serialize(telem, new JsonSerializerOptions { WriteIndented = true }));
-
-            
-            //return JsonConvert.SerializeObject(myclass, Newtonsoft.Json.Formatting.Indented);
-        }
-
-        private static T bytesToStruct<T>(byte[] bytes) where T : struct
-        {
-            GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-            T theStructure = Marshal.PtrToStructure<T>(handle.AddrOfPinnedObject());
-            handle.Free();
-
-            return theStructure;
-        }
 
         public static void ClearCurrentConsoleLine()
         {
@@ -201,7 +144,7 @@ namespace MmfReader
         public Vector3 Velocity;
         public Vector3 Accel;
         public bool Boost;
-        public bool WingsEnabled;
+        //public bool OnTrack;
         public bool WingsOpen;
         public float Mass;
         public bool Finished;
@@ -216,8 +159,8 @@ namespace MmfReader
 
     internal struct Tire
     {
-       public bool IsInContact;       
-       public float LocalPosition;
+       public bool Contact;       
+       public float Position;
 
     }
 }
