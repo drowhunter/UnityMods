@@ -128,20 +128,19 @@ namespace com.drowmods.DistanceTelemetryMod
             var car_logic = car.GetComponent<CarLogic>();
 
             //var ontrack = GameManager.IsInGameModeScene_;
-
-
             Quaternion rotation = cRigidbody.rotation;
             Vector3 eulerAngles = rotation.eulerAngles;
             Vector3 angularVelocity = cRigidbody.angularVelocity;
             
-            Vector3 localAngularVelocity = cRigidbody.transform.InverseTransformDirection(cRigidbody.angularVelocity);            
+            Vector3 localAngularVelocity = cRigidbody.transform.InverseTransformDirection(angularVelocity);            
             Vector3 localVelocity = cRigidbody.transform.InverseTransformDirection(cRigidbody.velocity);
             
             Vector3 lgforce = (localVelocity - previousLocalVelocity) / Time.fixedDeltaTime / 9.81f;
             previousLocalVelocity = localVelocity;
 
-            var centripetalForce = cRigidbody.velocity.magnitude * cRigidbody.angularVelocity.magnitude * Math.Sign(localAngularVelocity.y);
-             // equivalent to above
+            var centripetalForce = localVelocity.magnitude * localAngularVelocity.magnitude * Math.Sign(localAngularVelocity.y);
+            
+            // equivalent to above
 
             //var radius = cRigidbody.velocity.magnitude / cRigidbody.angularVelocity.magnitude;
             //var centripetalForce3 = cRigidbody.mass * cRigidbody.velocity.sqrMagnitude / radius;
@@ -149,28 +148,34 @@ namespace com.drowmods.DistanceTelemetryMod
 
             Vector3 gforce = (cRigidbody.velocity - previousVelocity) / Time.fixedDeltaTime / 9.81f;
             previousVelocity = cRigidbody.velocity;
-            
-            //cRigidbody.velocity.magnitude;
-            var velocity = cRigidbody.velocity;
 
             var data = new DistanceTelemetryData
             {
                 PacketId = _packetId,
                 KPH = car_logic.CarStats_.GetKilometersPerHour(),
-                Yaw = hemiCircle(car.transform.rotation.eulerAngles.y),
-                Pitch = hemiCircle(car.transform.rotation.eulerAngles.x),
-                Roll = -hemiCircle(car.transform.rotation.eulerAngles.z),
-                Sway = centripetalForce,
-                Velocity = localVelocity,                
-                Accel = lgforce,
-                Boost = car_logic.CarDirectives_.Boost_,
-                //OnTrack = ontrack,
-                WingsOpen = car_logic.Wings_.WingsOpen_,
                 Mass = cRigidbody.mass,
+                Yaw =    Maths.HemiCircle(car.transform.rotation.eulerAngles.y),
+                Pitch =  Maths.HemiCircle(car.transform.rotation.eulerAngles.x),
+                Roll = - Maths.HemiCircle(car.transform.rotation.eulerAngles.z),
+                Sway = centripetalForce,
+                Velocity = localVelocity,
+                AngularDrag = cRigidbody.angularDrag,
+                Accel = lgforce,
+                Inputs = new Inputs
+                {
+                    Gas = car_logic.CarDirectives_.Gas_,
+                    Brake = car_logic.CarDirectives_.Brake_,
+                    Steer = car_logic.CarDirectives_.Steer_,
+                    Boost = car_logic.CarDirectives_.Boost_,
+                    Grip = car_logic.CarDirectives_.Grip_,
+                    Wings = car_logic.Wings_.WingsOpen_
+                },         
+                
                 Finished = car.PlayerDataLocal_.Finished_,
-                AllWheelsOnGround = car_logic.CarStats_.AllWheelsContacting_,
-                Grip = car_logic.CarDirectives_.Grip_,
+                AllWheelsOnGround = car_logic.CarStats_.AllWheelsContacting_,                
                 isActiveAndEnabled = car.isActiveAndEnabled,
+                Grav = cRigidbody.useGravity,
+                
                 TireFL = new Tire { Contact = car_logic.CarStats_.WheelFL_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelFL_.hubTrans_.localPosition.y },
                 TireFR = new Tire { Contact = car_logic.CarStats_.WheelFR_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelFR_.hubTrans_.localPosition.y },
                 TireBL = new Tire { Contact = car_logic.CarStats_.wheelBL_.IsInContactSmooth_, Position = car_logic.CarStats_.wheelBL_.hubTrans_.localPosition.y },
@@ -190,10 +195,7 @@ namespace com.drowmods.DistanceTelemetryMod
             udp?.Dispose();
         }
 
-        private static float hemiCircle(float angle)
-        {
-            return angle >= 180 ? angle - 360 : angle;
-        }
+        
 
     }
 
@@ -201,21 +203,20 @@ namespace com.drowmods.DistanceTelemetryMod
     internal struct DistanceTelemetryData
     {
         public int PacketId;
-        public float KPH;        
+        public float KPH;
+        public float Mass;
         public float Yaw;
         public float Pitch;
         public float Roll;
         public float Sway;
         public Vector3 Velocity;        
-        public Vector3 Accel;       
-        public bool Boost;
-        //public bool OnTrack;
-        public bool WingsOpen;
-        public float Mass;
+        public Vector3 Accel; 
+        public Inputs Inputs;
         public bool Finished;
         public bool AllWheelsOnGround;
-        public bool isActiveAndEnabled;
-        public bool Grip;
+        public bool isActiveAndEnabled;        
+        public bool Grav;
+        public float AngularDrag;
         public Tire TireFL;
         public Tire TireFR;
         public Tire TireBL;
@@ -226,5 +227,15 @@ namespace com.drowmods.DistanceTelemetryMod
     {
         public bool Contact;
         public float Position;
+    }
+
+    internal struct Inputs
+    {
+        public float Gas;
+        public float Brake;
+        public float Steer;
+        public bool Boost;
+        public bool Grip;
+        public bool Wings;
     }
 }
