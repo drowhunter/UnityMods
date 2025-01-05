@@ -30,7 +30,7 @@ namespace MmfReader
                 while (!cts.Token.IsCancellationRequested)
                 {
                     var telem = udp.Receive();
-                    for (var i = 1; i < 15; i++)
+                    for (var i = 1; i < 20; i++)
                     {
                         Console.SetCursorPosition(0, i);
                         ClearCurrentConsoleLine();
@@ -41,13 +41,18 @@ namespace MmfReader
 
                     //cs.Print(telem);
 
-                    cs.LogLine(telem, _ => _.Finished);
+                    
                     cs.LogLine(telem, _ => _.Yaw, _ => _.Pitch, _ => _.Roll);
                     cs.LogLine(telem, _ => _.KPH, _ => _.Sway, _ => _.Mass);
                     Console.WriteLine();
                     cs.LogLine(telem, nameof(DistanceTelemetryData.Velocity), _ => _.Velocity.X, _ => _.Velocity.Y, _ => _.Velocity.Z);
                     cs.LogLine(telem, nameof(DistanceTelemetryData.Accel), _ => _.Accel.X, _ => _.Accel.Y, _ => _.Accel.Z);
-                    cs.LogLine(telem, _ => _.WingsOpen, _ => _.Boost, _ => _.Grip, _ => _.AllWheelsOnGround);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.Inputs), _ => _.Inputs.Gas, _ => _.Inputs.Brake                        
+                    );
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.Inputs), _ => _.Inputs.Boost, _ => _.Inputs.Grip, _ => _.Inputs.Wings);
+                    cs.LogLine(telem, _ => _.Finished, _ => _.isActiveAndEnabled);
+                    cs.LogLine(telem, _ => _.AllWheelsOnGround, _ => _.Grav, _ => _.AngularDrag);
+
                     Console.WriteLine();
                     Console.WriteLine("Tires\n");
 
@@ -61,11 +66,12 @@ namespace MmfReader
                 }
             }).Start();
 
-            Console.WriteLine("Press any key to exit");
-            Console.ReadKey();
+            Console.WriteLine("Press Enter to exit");
+            Console.ReadLine();
             cts.Cancel();
+            Console.Clear();
             Console.WriteLine("Quitting ..");
-            Console.ReadKey();
+            
         }
 
 
@@ -114,7 +120,7 @@ namespace MmfReader
                         //line += label + '\n' + new string('_', label?.Length ?? 0) + "\n\n";
 
 
-                    line += string.Format("{2}{0}:\t{1," + align + ":F4}\t", memberName, value, label != null ? label + ".": "");
+                    line += string.Format("{2}{0}:\t{1," + align + ":F3}\t", memberName, value, label != null ? label + ".": "");
 
                 }
 
@@ -137,20 +143,19 @@ namespace MmfReader
     {
         public int PacketId;
         public float KPH;
+        public float Mass;
         public float Yaw;
         public float Pitch;
         public float Roll;
         public float Sway;
         public Vector3 Velocity;
         public Vector3 Accel;
-        public bool Boost;
-        //public bool OnTrack;
-        public bool WingsOpen;
-        public float Mass;
+        public Inputs Inputs;
         public bool Finished;
         public bool AllWheelsOnGround;
         public bool isActiveAndEnabled;
-        public bool Grip;
+        public bool Grav;
+        public float AngularDrag;
         public Tire TireFL;
         public Tire TireFR;
         public Tire TireBL;
@@ -159,8 +164,17 @@ namespace MmfReader
 
     internal struct Tire
     {
-       public bool Contact;       
-       public float Position;
+        public bool Contact;
+        public float Position;
+    }
 
+    internal struct Inputs
+    {
+        public float Gas;
+        public float Brake;
+        public float Steer;
+        public bool Boost;
+        public bool Grip;
+        public bool Wings;
     }
 }
