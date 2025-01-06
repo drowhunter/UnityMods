@@ -33,7 +33,6 @@ namespace com.drowmods.DistanceTelemetryMod
 
         public void Awake()
         {
-
             harmony.PatchAll();
 
             Log = Logger;
@@ -41,40 +40,9 @@ namespace com.drowmods.DistanceTelemetryMod
             Log.LogInfo(string.Format("{0} {1} loaded.", PluginName, VersionString));
         }
 
-        public void Update()
-        {
-            //Logger.LogInfo(string.Format("[{0}] Update", PluginName));
-        }
+        
 
-    }
-
-    
-    //internal class GameManagerPatches
-    //{
-    //    static ManualLogSource log;
-
-    //    public GameManagerPatches()
-    //    {
-    //        log = Logger.CreateLogSource("GameManagerPatches");
-    //    }
-
-    //    [HarmonyPatch(typeof(GameManager), "FixedUpdate")]
-    //    private class GameManagerPatches_GameManager_FixedUpdate
-    //    {
-    //        public static bool blah = false;
-
-
-
-    //        private static void Postfix(GameManager __instance)
-    //        {
-    //            //DistanceTelemetryPlugin.Echo(nameof(GameManagerPatches_GameManager_FixedUpdate), "Postfix");
-    //            blah = GameManager.IsInGameModeScene_;
-    //            log.LogDebug("GameManagerPatches_GameManager_FixedUpdate IsInGameModeScene_" + blah);
-                
-    //        }
-    //    }
-
-    //}
+    }    
 
     [HarmonyPatch(typeof(LocalPlayerControlledCar))]
     internal class LocalPlayerControlledCarPatches
@@ -107,13 +75,6 @@ namespace com.drowmods.DistanceTelemetryMod
             {
                 SendAddress = new IPEndPoint(IPAddress.Loopback, 12345)
             });
-
-            //var playerEvents = __instance.GetComponent<PlayerEvents>();
-            //playerEvents.Subscribe<Finished.Data>(data =>
-            //{
-            //    log.LogInfo("Finished.Data");
-            //}); 
-
         }
 
         private static Vector3 previousVelocity = Vector3.zero;
@@ -199,6 +160,7 @@ namespace com.drowmods.DistanceTelemetryMod
 
     }
 
+    
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct DistanceTelemetryData
     {
@@ -223,12 +185,14 @@ namespace com.drowmods.DistanceTelemetryMod
         public Tire TireBR;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct Tire
     {
         public bool Contact;
         public float Position;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct Inputs
     {
         public float Gas;

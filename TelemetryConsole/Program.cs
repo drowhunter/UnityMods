@@ -1,6 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Immutable;
+using System.Linq.Expressions;
 using System.Net;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 
@@ -14,6 +16,10 @@ namespace MmfReader
 
         static void Main(string[] args)
         {
+
+            var inputs = GetInputs<DistanceTelemetryData>(default).ToImmutableArray();
+
+
             new Thread(static async () =>
             {
                 var udp = new UdpTelemetry<DistanceTelemetryData>(new UdpTelemetryConfig
@@ -26,15 +32,23 @@ namespace MmfReader
                
                 Console.WriteLine("Start Read Thread");
                 var ms = new MemoryStream();
-                
+                int oo = 0;
                 while (!cts.Token.IsCancellationRequested)
                 {
                     var telem = udp.Receive();
-                    for (var i = 1; i < 20; i++)
+
+
+                    Console.SetCursorPosition(0, 0);
+                    foreach (var (i, (key, value)) in GetInputs(telem).WithIndex())
                     {
-                        Console.SetCursorPosition(0, i);
-                        ClearCurrentConsoleLine();
+                        Console.WriteLine($"{i} - {key}: {value}");
                     }
+
+                    //for (var i = 1; i < 20; i++)
+                    //{
+                    //    Console.SetCursorPosition(0, i);
+                    //    ClearCurrentConsoleLine();
+                    //}
 
                     Console.SetCursorPosition(0, 2);
                     const int align = 10;
@@ -128,6 +142,25 @@ namespace MmfReader
             }
         }
 
+        private static IEnumerable<(string key, float value)> GetInputs<T>(T data )
+        {
+            foreach (var field in (data?.GetType() ?? typeof(T)).GetFields())
+            {
+                if (field.FieldType.IsPrimitive)
+                    yield return (field.Name, GetFloat(field, data));
+                else                
+                    foreach (var (k, v) in GetInputs(field.GetValue(data)))
+                        yield return (field.Name + "." + k, v);                
+            }
+
+            float GetFloat(FieldInfo f, object ? data = null)
+            {
+                var retval = data == null ? 0 : (float)Convert.ChangeType(f.GetValue(data), typeof(float));
+                return retval;
+            }
+        }
+
+        
 
         public static void ClearCurrentConsoleLine()
         {
@@ -136,6 +169,16 @@ namespace MmfReader
             Console.Write(new string(' ', Console.WindowWidth));
             Console.SetCursorPosition(0, currentLineCursor);
         }
+    }
+
+    internal static class Extensions
+    {
+        
+        internal static IEnumerable<(int index, T item)> WithIndex<T>(this IEnumerable<T> source)
+        {
+            return source.Select((item, index) => (index, item));
+        }
+        
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -161,13 +204,13 @@ namespace MmfReader
         public Tire TireBL;
         public Tire TireBR;
     }
-
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct Tire
     {
         public bool Contact;
         public float Position;
     }
-
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct Inputs
     {
         public float Gas;
