@@ -17,7 +17,7 @@ namespace MmfReader
         static void Main(string[] args)
         {
 
-            var inputs = GetInputs<DistanceTelemetryData>(default).ToImmutableArray();
+            //var inputs = GetInputs<DistanceTelemetryData>(default).ToImmutableArray();
 
 
             new Thread(static async () =>
@@ -38,11 +38,11 @@ namespace MmfReader
                     var telem = udp.Receive();
 
 
-                    Console.SetCursorPosition(0, 0);
-                    foreach (var (i, (key, value)) in GetInputs(telem).WithIndex())
-                    {
-                        Console.WriteLine($"{i} - {key}: {value}");
-                    }
+                    //Console.SetCursorPosition(0, 0);
+                    //foreach (var (i, (key, value)) in GetInputs(telem).WithIndex())
+                    //{
+                    //    Console.WriteLine($"{i} - {key}: {value}");
+                    //}
 
                     //for (var i = 1; i < 20; i++)
                     //{
@@ -70,10 +70,10 @@ namespace MmfReader
                     Console.WriteLine();
                     Console.WriteLine("Tires\n");
 
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFL), _ => _.TireFL.Contact, _ => _.TireFL.Position);
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFR), _ => _.TireFR.Contact, _ => _.TireFR.Position);
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBL), _ => _.TireBL.Contact, _ => _.TireBL.Position);
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBR), _ => _.TireBR.Contact, _ => _.TireBR.Position);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFL), _ => _.TireFL.Contact, _ => _.TireFL.Position, _ => _.TireFL.Suspension );
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFR), _ => _.TireFR.Contact, _ => _.TireFR.Position, _ => _.TireFL.Suspension );
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBL), _ => _.TireBL.Contact, _ => _.TireBL.Position, _ => _.TireFL.Suspension );
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBR), _ => _.TireBR.Contact, _ => _.TireBR.Position, _ => _.TireFL.Suspension );
                     
 
 
@@ -209,6 +209,7 @@ namespace MmfReader
     {
         public bool Contact;
         public float Position;
+        public float Suspension;
     }
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct Inputs

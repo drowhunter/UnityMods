@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using TelemetryLibrary;
 
 using UnityEngine;
+
 using Logger = BepInEx.Logging.Logger;
 
 namespace com.drowmods.DistanceTelemetryMod
@@ -88,6 +89,7 @@ namespace com.drowmods.DistanceTelemetryMod
             var cRigidbody = car.GetComponent<Rigidbody>();
             var car_logic = car.GetComponent<CarLogic>();
 
+            
             //var ontrack = GameManager.IsInGameModeScene_;
             Quaternion rotation = cRigidbody.rotation;
             Vector3 eulerAngles = rotation.eulerAngles;
@@ -107,17 +109,25 @@ namespace com.drowmods.DistanceTelemetryMod
             //var centripetalForce3 = cRigidbody.mass * cRigidbody.velocity.sqrMagnitude / radius;
 
 
-            Vector3 gforce = (cRigidbody.velocity - previousVelocity) / Time.fixedDeltaTime / 9.81f;
-            previousVelocity = cRigidbody.velocity;
+            //Vector3 gforce = (cRigidbody.velocity - previousVelocity) / Time.fixedDeltaTime / 9.81f;
+            //previousVelocity = cRigidbody.velocity;
+
+            //var euler = rotation.ToEuler(true);
+
+        
+
 
             var data = new DistanceTelemetryData
             {
                 PacketId = _packetId,
                 KPH = car_logic.CarStats_.GetKilometersPerHour(),
                 Mass = cRigidbody.mass,
-                Yaw =    Maths.HemiCircle(car.transform.rotation.eulerAngles.y),
-                Pitch =  Maths.HemiCircle(car.transform.rotation.eulerAngles.x),
-                Roll = - Maths.HemiCircle(car.transform.rotation.eulerAngles.z),
+                Yaw = Maths.HemiCircle(rotation.eulerAngles.y),
+                Pitch = Maths.HemiCircle(rotation.eulerAngles.x),
+                Roll = -Maths.HemiCircle(rotation.eulerAngles.z),
+                //Yaw = euler.y,
+                //Pitch = euler.x,
+                //Roll = euler.z,
                 Sway = centripetalForce,
                 Velocity = localVelocity,
                 AngularDrag = cRigidbody.angularDrag,
@@ -137,17 +147,32 @@ namespace com.drowmods.DistanceTelemetryMod
                 isActiveAndEnabled = car.isActiveAndEnabled,
                 Grav = cRigidbody.useGravity,
                 
-                TireFL = new Tire { Contact = car_logic.CarStats_.WheelFL_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelFL_.hubTrans_.localPosition.y },
-                TireFR = new Tire { Contact = car_logic.CarStats_.WheelFR_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelFR_.hubTrans_.localPosition.y },
-                TireBL = new Tire { Contact = car_logic.CarStats_.wheelBL_.IsInContactSmooth_, Position = car_logic.CarStats_.wheelBL_.hubTrans_.localPosition.y },
-                TireBR = new Tire { Contact = car_logic.CarStats_.WheelBR_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelBR_.hubTrans_.localPosition.y },
+                TireFL = new Tire { Contact = car_logic.CarStats_.WheelFL_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelFL_.hubTrans_.localPosition.y, Suspension = CalcSuspension(car_logic.CarStats_.WheelFL_) },
+                TireFR = new Tire { Contact = car_logic.CarStats_.WheelFR_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelFR_.hubTrans_.localPosition.y, Suspension = CalcSuspension(car_logic.CarStats_.WheelFR_) },
+                TireBL = new Tire { Contact = car_logic.CarStats_.wheelBL_.IsInContactSmooth_, Position = car_logic.CarStats_.wheelBL_.hubTrans_.localPosition.y, Suspension = CalcSuspension(car_logic.CarStats_.wheelBL_) },
+                TireBR = new Tire { Contact = car_logic.CarStats_.WheelBR_.IsInContactSmooth_, Position = car_logic.CarStats_.WheelBR_.hubTrans_.localPosition.y, Suspension = CalcSuspension(car_logic.CarStats_.WheelBR_) },
             };
 
             udp.Send(data);
 
             _packetId++;
 
+            float CalcSuspension(NitronicCarWheel wheel)
+            {
+                var pos = Math.Abs(wheel.hubTrans_.localPosition.y);
+                var suspension = wheel.SuspensionDistance_;
+
+                
+                var frac =  pos / suspension;
+
+                var s = Maths.EnsureMapRange(pos, 0, suspension, 1 , -1);
+
+                return (float) s;
+
+            }
+
         }
+
 
         [HarmonyCleanup]
         public static void CleanUp()
@@ -160,46 +185,40 @@ namespace com.drowmods.DistanceTelemetryMod
 
     }
 
-    
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct DistanceTelemetryData
+    public static class math
     {
-        public int PacketId;
-        public float KPH;
-        public float Mass;
-        public float Yaw;
-        public float Pitch;
-        public float Roll;
-        public float Sway;
-        public Vector3 Velocity;        
-        public Vector3 Accel; 
-        public Inputs Inputs;
-        public bool Finished;
-        public bool AllWheelsOnGround;
-        public bool isActiveAndEnabled;        
-        public bool Grav;
-        public float AngularDrag;
-        public Tire TireFL;
-        public Tire TireFR;
-        public Tire TireBL;
-        public Tire TireBR;
-    }
+        /// <summary>
+        /// Convert quaternion to Euler angles
+        /// </summary>
+        /// <param name="q"></param>(float pitch, float yaw, float roll)
+        /// <returns>pitch(x-rotation), yaw (y-rotation) , roll (z-rotation)</returns>
+        public static Vector3 ToEuler(this Quaternion q, bool returnDegrees = true)
+        {
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct Tire
-    {
-        public bool Contact;
-        public float Position;
-    }
+            var p = (float)q.ToPitch();
+            var y = (float)q.ToYaw();
+            var r = (float)q.ToRoll();
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct Inputs
-    {
-        public float Gas;
-        public float Brake;
-        public float Steer;
-        public bool Boost;
-        public bool Grip;
-        public bool Wings;
+            if (!returnDegrees)
+                return new Vector3(p, y, r);
+
+            // Convert the angles from radians to degrees
+            return new Vector3(p * Mathf.Rad2Deg, y * Mathf.Rad2Deg, r * Mathf.Rad2Deg);
+
+        }
+
+        
+
+        private static double ToPitch(this Quaternion q)
+        {
+            double num = 2.0 * (q.x * q.y + q.w * q.y);
+            double num2 = 2.0 * (q.w * q.x - q.y * q.z);
+            double num3 = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
+            return Math.Atan2(num2, Math.Sqrt(num * num + num3 * num3));
+        }
+
+        private static double ToYaw(this Quaternion q) => Math.Atan2(2.0 * (q.x * q.y + q.w * q.y), 1.0 - 2.0 * (q.x * q.x + q.y * q.y));
+
+        private static double ToRoll(this Quaternion q) => Math.Atan2(2.0 * (q.x * q.y + q.w * q.z), 1.0 - 2.0 * (q.x * q.x + q.z * q.z));
     }
 }
