@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistanceTelemetryMod", "DistanceTelemetryMod\DistanceTelemetryMod.csproj", "{AFC95631-2530-473A-A1B8-39321336390D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Depth3DUnhinged", "Depth3DUnhinged\Depth3DUnhinged.csproj", "{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TelemetryLib", "TelemetryLibrary\TelemetryLib.shproj", "{EEB444E9-0B1F-467D-B01C-EDBA291BC941}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelemetryConsole", "TelemetryConsole\TelemetryConsole.csproj", "{2CF30D2B-EEB0-4809-9C92-468804A2E52F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mods", "Mods", "{AAAB5715-01FD-445B-8666-F8B023A1BCB4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AFC95631-2530-473A-A1B8-39321336390D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFC95631-2530-473A-A1B8-39321336390D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFC95631-2530-473A-A1B8-39321336390D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFC95631-2530-473A-A1B8-39321336390D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CF30D2B-EEB0-4809-9C92-468804A2E52F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CF30D2B-EEB0-4809-9C92-468804A2E52F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CF30D2B-EEB0-4809-9C92-468804A2E52F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CF30D2B-EEB0-4809-9C92-468804A2E52F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AFC95631-2530-473A-A1B8-39321336390D} = {AAAB5715-01FD-445B-8666-F8B023A1BCB4}
+		{B9FCA8DF-C60F-4A9C-AAD0-F7ED71E0ADC5} = {AAAB5715-01FD-445B-8666-F8B023A1BCB4}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		TelemetryLibrary\TelemetryLibrary.projitems*{2cf30d2b-eeb0-4809-9c92-468804a2e52f}*SharedItemsImports = 5
+		TelemetryLibrary\TelemetryLibrary.projitems*{afc95631-2530-473a-a1b8-39321336390d}*SharedItemsImports = 4
+		TelemetryLibrary\TelemetryLibrary.projitems*{b9fca8df-c60f-4a9c-aad0-f7ed71e0adc5}*SharedItemsImports = 4
+		TelemetryLibrary\TelemetryLibrary.projitems*{eeb444e9-0b1f-467d-b01c-edba291bc941}*SharedItemsImports = 13
+	EndGlobalSection
+EndGlobal
