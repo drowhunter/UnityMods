@@ -1,42 +1,49 @@
 ﻿using System.Runtime.InteropServices;
+
 using UnityEngine;
 
 namespace com.drowmods.DistanceTelemetryMod
 {
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct DistanceTelemetryData
     {
-        public bool GamePaused;        
-        public bool IsRacing;
+        public int PacketId;
         public float KPH;
-
-        public Vector3 Rotation;
-
-        public Vector3 AngularVelocity;
-
-        public float cForce;
-
+        public float Mass;
+        public float Yaw;
+        public float Pitch;
+        public float Roll;
+        public float Sway;
         public Vector3 Velocity;        
-        public Vector3 Accel;
-
-        public bool Boost;
-        public bool Grip;
-        public bool WingsOpen;
-
-        public bool IsCarEnabled;
-        public bool IsCarIsActive;
-        public bool IsCarDestroyed;
-        public bool AllWheelsOnGround;           
-        public bool IsGrav;
-
-        public float TireFL;
-        public float TireFR;
-        public float TireBL;
-        public float TireBR;
-
-        public Quaternion Orientation;
-
+        public Vector3 Accel; 
+        public Inputs Inputs;
+        public bool Finished;
+        public bool AllWheelsOnGround;
+        public bool isActiveAndEnabled;        
+        public bool Grav;
+        public float AngularDrag;
+        public Tire TireFL;
+        public Tire TireFR;
+        public Tire TireBL;
+        public Tire TireBR;
     }
 
-    
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    internal struct Tire
+    {
+        public bool Contact;
+        public float Position;
+        public float Suspension;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    internal struct Inputs
+    {
+        public float Gas;
+        public float Brake;
+        public float Steer;
+        public bool Boost;
+        public bool Grip;
+        public bool Wings;
+    }
 }
