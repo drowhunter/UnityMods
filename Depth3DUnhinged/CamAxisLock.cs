@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
 using TelemetryLibrary;
@@ -19,7 +20,7 @@ namespace com.drowmods.depth3dunhinged
         {
             //mutex = new Mutex(false, "Global\\CamAxisLock");
             mmf = new MmfTelemetry<FreePieIO6Dof>(new MmfTelemetryConfig { Name = "FPGeneric" });            
-            System.Net.Sockets.UdpClient udpClient = new System.Net.Sockets.UdpClient();
+            var udpClient = new UdpClient();
             udpClient.ReceiveAsync();
             _packetId = 0;
 

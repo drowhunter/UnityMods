@@ -9,6 +9,7 @@
     <Import_RootNamespace>TelemetryLibrary</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MmfTelemetry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TelemetryBase.cs" />
