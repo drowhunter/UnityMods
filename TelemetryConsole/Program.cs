@@ -18,7 +18,7 @@ namespace MmfReader
         {
 
             //var inputs = GetInputs<DistanceTelemetryData>(default).ToImmutableArray();
-
+            var len = Guid.NewGuid().ToString("B").Length;
 
             new Thread(static async () =>
             {
@@ -55,8 +55,11 @@ namespace MmfReader
 
                     //cs.Print(telem);
 
-                    
+                    cs.LogLine(telem, _ => _.GamePaused, _ => _.CarEnabled, _ => _.RaceStarted);
                     cs.LogLine(telem, _ => _.Yaw, _ => _.Pitch, _ => _.Roll);
+                    cs.LogLine(telem, "Rot", _ => _.LocalRot.Y, _ => _.LocalRot.X, _ => _.LocalRot.Z);
+                    cs.LogLine(telem, "Gravity", _ => _.GravityUp.X, _ => _.GravityUp.Y, _ => _.GravityUp.Z);
+
                     cs.LogLine(telem, _ => _.KPH, _ => _.Sway, _ => _.Mass);
                     Console.WriteLine();
                     cs.LogLine(telem, nameof(DistanceTelemetryData.Velocity), _ => _.Velocity.X, _ => _.Velocity.Y, _ => _.Velocity.Z);
@@ -185,11 +188,16 @@ namespace MmfReader
     internal struct DistanceTelemetryData
     {
         public int PacketId;
+        public bool GamePaused;
+        public bool CarEnabled;
+        public bool RaceStarted;
         public float KPH;
         public float Mass;
         public float Yaw;
         public float Pitch;
         public float Roll;
+        public Vector3 LocalRot;
+        public Vector3 GravityUp;
         public float Sway;
         public Vector3 Velocity;
         public Vector3 Accel;
