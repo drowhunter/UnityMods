@@ -8,11 +8,16 @@ namespace com.drowmods.DistanceTelemetryMod
     internal struct DistanceTelemetryData
     {
         public int PacketId;
+        public bool GamePaused;
+        public bool CarEnabled;
+        public bool RaceStarted;
         public float KPH;
         public float Mass;
         public float Yaw;
         public float Pitch;
         public float Roll;
+        public Vector3 LocalRot;
+        public Vector3 GravityUp;
         public float Sway;
         public Vector3 Velocity;        
         public Vector3 Accel; 
