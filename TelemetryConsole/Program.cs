@@ -38,48 +38,30 @@ namespace MmfReader
                     var telem = udp.Receive();
 
 
-                    //Console.SetCursorPosition(0, 0);
-                    //foreach (var (i, (key, value)) in GetInputs(telem).WithIndex())
-                    //{
-                    //    Console.WriteLine($"{i} - {key}: {value}");
-                    //}
-
-                    //for (var i = 1; i < 20; i++)
-                    //{
-                    //    Console.SetCursorPosition(0, i);
-                    //    ClearCurrentConsoleLine();
-                    //}
-
                     Console.SetCursorPosition(0, 2);
-                    const int align = 10;
 
-                    //cs.Print(telem);
+                    cs.LogLine(telem, _ => _.GamePaused, _ => _.IsRacing);
+                    cs.LogLine(telem, _ => _.IsCarIsActive, _ => _.IsCarEnabled, _ => _.IsCarDestroyed);
+                    Console.WriteLine();
 
-                    cs.LogLine(telem, _ => _.GamePaused, _ => _.CarEnabled, _ => _.RaceStarted);
-                    cs.LogLine(telem, _ => _.Yaw, _ => _.Pitch, _ => _.Roll);
-                    cs.LogLine(telem, "Rot", _ => _.LocalRot.Y, _ => _.LocalRot.X, _ => _.LocalRot.Z);
-                    cs.LogLine(telem, "Gravity", _ => _.GravityUp.X, _ => _.GravityUp.Y, _ => _.GravityUp.Z);
+                    cs.LogLine(telem, _ => _.Pitch, _ => _.Yaw, _ => _.Roll);
+                    cs.LogLine(telem, _ => _.xPitch, _ => _.xYaw, _ => _.xRoll);
+                    
 
-                    cs.LogLine(telem, _ => _.KPH, _ => _.Sway, _ => _.Mass);
+                    cs.LogLine(telem, _ => _.KPH, _ => _.cForce, _ => _.IsGrav);
                     Console.WriteLine();
                     cs.LogLine(telem, nameof(DistanceTelemetryData.Velocity), _ => _.Velocity.X, _ => _.Velocity.Y, _ => _.Velocity.Z);
                     cs.LogLine(telem, nameof(DistanceTelemetryData.Accel), _ => _.Accel.X, _ => _.Accel.Y, _ => _.Accel.Z);
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.Inputs), _ => _.Inputs.Gas, _ => _.Inputs.Brake                        
-                    );
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.Inputs), _ => _.Inputs.Boost, _ => _.Inputs.Grip, _ => _.Inputs.Wings);
-                    cs.LogLine(telem, _ => _.Finished, _ => _.isActiveAndEnabled);
-                    cs.LogLine(telem, _ => _.AllWheelsOnGround, _ => _.Grav, _ => _.AngularDrag);
+                    cs.LogLine(telem, _ => _.Boost, _ => _.Grip, _ => _.WingsOpen);
+                    
+                    cs.LogLine(telem, _ => _.AllWheelsOnGround);
 
                     Console.WriteLine();
                     Console.WriteLine("Tires\n");
 
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFL), _ => _.TireFL.Contact, _ => _.TireFL.Position, _ => _.TireFL.Suspension );
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireFR), _ => _.TireFR.Contact, _ => _.TireFR.Position, _ => _.TireFL.Suspension );
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBL), _ => _.TireBL.Contact, _ => _.TireBL.Position, _ => _.TireFL.Suspension );
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.TireBR), _ => _.TireBR.Contact, _ => _.TireBR.Position, _ => _.TireFL.Suspension );
+                    cs.LogLine(telem, _ => _.TireFL, _ => _.TireFR );
+                    cs.LogLine(telem, _ => _.TireBL , _ => _.TireBR);
                     
-
-
                 }
             }).Start();
 
@@ -184,49 +166,41 @@ namespace MmfReader
         
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential)]
     internal struct DistanceTelemetryData
     {
-        public int PacketId;
         public bool GamePaused;
-        public bool CarEnabled;
-        public bool RaceStarted;
+        public bool IsRacing;
         public float KPH;
-        public float Mass;
-        public float Yaw;
+
         public float Pitch;
+        public float Yaw;
         public float Roll;
-        public Vector3 LocalRot;
-        public Vector3 GravityUp;
-        public float Sway;
+
+        public float xPitch;
+        public float xYaw;
+        public float xRoll;
+
+        public float cForce;
+
         public Vector3 Velocity;
         public Vector3 Accel;
-        public Inputs Inputs;
-        public bool Finished;
-        public bool AllWheelsOnGround;
-        public bool isActiveAndEnabled;
-        public bool Grav;
-        public float AngularDrag;
-        public Tire TireFL;
-        public Tire TireFR;
-        public Tire TireBL;
-        public Tire TireBR;
-    }
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct Tire
-    {
-        public bool Contact;
-        public float Position;
-        public float Suspension;
-    }
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct Inputs
-    {
-        public float Gas;
-        public float Brake;
-        public float Steer;
+
         public bool Boost;
         public bool Grip;
-        public bool Wings;
+        public bool WingsOpen;
+
+        public bool IsCarEnabled;
+        public bool IsCarIsActive;
+        public bool IsCarDestroyed;
+        public bool AllWheelsOnGround;
+        public bool IsGrav;
+
+        public float TireFL;
+        public float TireFR;
+        public float TireBL;
+        public float TireBR;
+
+
     }
 }
