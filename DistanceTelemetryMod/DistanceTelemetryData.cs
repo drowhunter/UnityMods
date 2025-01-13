@@ -15,10 +15,8 @@ namespace com.drowmods.DistanceTelemetryMod
         public float Yaw;        
         public float Roll;
 
-        public float xPitch;
-        public float xYaw;        
-        public float xRoll;       
-        
+        public Vector3 AngularVelocity;
+
         public float cForce;
 
         public Vector3 Velocity;        

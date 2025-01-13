@@ -146,12 +146,11 @@ namespace com.drowmods.DistanceTelemetryMod
 
             data.Pitch = pyr.pitch;
             data.Yaw = pyr.yaw;            
-            data.Roll = pyr.roll;            
+            data.Roll = pyr.roll;
 
-            data.xPitch = Maths.ReverseHemiCircle(pyr.pitch);
-            data.xYaw = Maths.ReverseHemiCircle(pyr.yaw);
-            data.xRoll = Maths.ReverseHemiCircle(pyr.roll);
-            
+            data.AngularVelocity = localAngularVelocity;
+
+
             data.KPH = car_logic.CarStats_.GetKilometersPerHour();
             
             data.cForce = cForce;

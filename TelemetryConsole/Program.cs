@@ -45,11 +45,13 @@ namespace MmfReader
                     Console.WriteLine();
 
                     cs.LogLine(telem, _ => _.Pitch, _ => _.Yaw, _ => _.Roll);
-                    cs.LogLine(telem, _ => _.xPitch, _ => _.xYaw, _ => _.xRoll);
+                    
                     
 
                     cs.LogLine(telem, _ => _.KPH, _ => _.cForce, _ => _.IsGrav);
                     Console.WriteLine();
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.AngularVelocity), _ => _.AngularVelocity.X, _ => _.AngularVelocity.Y, _ => _.AngularVelocity.Z);
+
                     cs.LogLine(telem, nameof(DistanceTelemetryData.Velocity), _ => _.Velocity.X, _ => _.Velocity.Y, _ => _.Velocity.Z);
                     cs.LogLine(telem, nameof(DistanceTelemetryData.Accel), _ => _.Accel.X, _ => _.Accel.Y, _ => _.Accel.Z);
                     cs.LogLine(telem, _ => _.Boost, _ => _.Grip, _ => _.WingsOpen);
@@ -177,9 +179,7 @@ namespace MmfReader
         public float Yaw;
         public float Roll;
 
-        public float xPitch;
-        public float xYaw;
-        public float xRoll;
+        public Vector3 AngularVelocity;
 
         public float cForce;
 
