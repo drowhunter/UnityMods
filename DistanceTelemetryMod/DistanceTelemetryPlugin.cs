@@ -10,6 +10,7 @@ using Events.RaceEnd;
 
 using System;
 using System.Net;
+using System.Runtime.InteropServices;
 
 using TelemetryLibrary;
 
@@ -142,7 +143,8 @@ namespace com.drowmods.DistanceTelemetryMod
 
             var cForce = localVelocity.magnitude * localAngularVelocity.magnitude * Math.Sign(localAngularVelocity.y);
 
-            var pyr = rotation.ToPitchYawRoll();
+            var pyr = rotation.ToEulerAnglesSmart(ref data.AllWheelsOnGround);
+            
 
             data.Pitch = pyr.pitch;
             data.Yaw = pyr.yaw;            
@@ -160,10 +162,9 @@ namespace com.drowmods.DistanceTelemetryMod
 
             data.Boost = car_logic.CarDirectives_.Boost_;
             data.Grip = car_logic.CarDirectives_.Grip_;
-            data.WingsOpen = car_logic.Wings_.WingsOpen_;
-            
+            data.WingsOpen = car_logic.Wings_.WingsOpen_;            
 
-            //data.Finished = car.PlayerDataLocal_.Finished_;
+            
             data.AllWheelsOnGround = car_logic.CarStats_.AllWheelsContacting_;
             data.IsCarIsActive = car.isActiveAndEnabled;
             data.IsGrav = cRigidbody.useGravity;
@@ -173,6 +174,14 @@ namespace com.drowmods.DistanceTelemetryMod
             data.TireBR = CalcSuspension(car_logic.CarStats_.WheelBR_);
 
             data.IsCarDestroyed = carDestroyed;
+
+            data.Rot = new Quat
+            {
+                w = rotation.w,
+                x = rotation.x,
+                y = rotation.y,
+                z = rotation.z
+            };
 
             udp.Send(data);
             
@@ -187,7 +196,7 @@ namespace com.drowmods.DistanceTelemetryMod
 
                 var s = Maths.EnsureMapRange(pos, 0, suspension, 1, -1);
 
-                return (float)s;
+                return (float)s;//(s *  (wheel.contact_.IsInContact_ ? 1 : 0 ));
 
             }
 
@@ -243,19 +252,53 @@ namespace com.drowmods.DistanceTelemetryMod
             Echo("LocalVehicle_Exploded", "Exploded");
             carDestroyed = true;
         }
+       
     }
 
 
     internal static class QuatMath
     {
+        
+
+        public static PitchYawRoll ToEulerAnglesSmart(this Quaternion q, ref bool isFixed)
+        {
+            var pyr = q.ToPitchYawRoll();
+            float roll = pyr.roll;
+            float yaw = pyr.yaw;
+            float pitch = pyr.pitch;
+
+
+            isFixed = false;
+            if(Mathf.Abs(roll) > 66 && Mathf.Abs(roll) < 104)
+            {
+                var pyu = q.ToPitchYawRollUnity();
+                
+                yaw = pyu.yaw;
+                pitch = pyu.pitch;
+                isFixed = true;
+            }
+            
+            return new PitchYawRoll(pitch, yaw, roll);
+        }
+
+        
+
         public static PitchYawRoll ToPitchYawRoll(this Quaternion q)
         {
-            var yaw = (float)  Math.Atan2(2 * q.y * q.w - 2 * q.x * q.z, 1 - 2 * q.y * q.y - 2 * q.z * q.z) * Mathf.Rad2Deg;
-            var pitch = (float)Math.Atan2(2 * q.x * q.w - 2 * q.y * q.z, 1 - 2 * q.x * q.x - 2 * q.z * q.z) * Mathf.Rad2Deg;
-            var roll = (float) Math.Asin (2 * q.x * q.y + 2 * q.z * q.w) * Mathf.Rad2Deg;
+            var yaw =   Mathf.Atan2(2.0f * (q.y * q.w - q.x * q.z), 1 - 2 * (q.y * q.y + q.z * q.z)) * Mathf.Rad2Deg;
+            var pitch = Mathf.Atan2(2.0f * (q.x * q.w - q.y * q.z), 1 - 2 * (q.x * q.x + q.z * q.z)) * Mathf.Rad2Deg;
+            var roll =  Mathf.Asin (2.0f * (q.x * q.y + q.z * q.w)) * Mathf.Rad2Deg;
 
             return new PitchYawRoll(pitch, yaw, -roll);
         }
 
+        public static PitchYawRoll ToPitchYawRollUnity(this Quaternion q)
+        {
+            return new PitchYawRoll(
+                Maths.HemiCircle(q.eulerAngles.x),
+                Maths.HemiCircle(q.eulerAngles.y),
+                -Maths.HemiCircle(q.eulerAngles.z)
+            );
+        }        
     }
 }
