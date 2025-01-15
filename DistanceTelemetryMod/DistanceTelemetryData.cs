@@ -15,10 +15,8 @@ namespace com.drowmods.DistanceTelemetryMod
         public float Yaw;        
         public float Roll;
 
-        public float xPitch;
-        public float xYaw;        
-        public float xRoll;       
-        
+        public Vector3 AngularVelocity;
+
         public float cForce;
 
         public Vector3 Velocity;        
@@ -39,7 +37,14 @@ namespace com.drowmods.DistanceTelemetryMod
         public float TireBL;
         public float TireBR;
 
-        
+        public Quat Rot;
     }
 
+    internal struct  Quat 
+    {
+        public float w;
+        public float x;
+        public float y;
+        public float z;
+    }
 }
