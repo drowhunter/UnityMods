@@ -45,8 +45,9 @@ namespace MmfReader
                     Console.WriteLine();
 
                     cs.LogLine(telem, _ => _.Pitch, _ => _.Yaw, _ => _.Roll);
-                    
-                    
+
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.Rot), _ => _.Rot.w, _ => _.Rot.x, _ => _.Rot.y, _ => _.Rot.z);
+
 
                     cs.LogLine(telem, _ => _.KPH, _ => _.cForce, _ => _.IsGrav);
                     Console.WriteLine();
@@ -201,6 +202,14 @@ namespace MmfReader
         public float TireBL;
         public float TireBR;
 
+        public Quat Rot;
+    }
 
+    internal struct Quat
+    {
+        public float w;
+        public float x;
+        public float y;
+        public float z;
     }
 }
