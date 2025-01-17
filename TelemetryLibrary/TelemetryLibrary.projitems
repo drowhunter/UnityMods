@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MmfTelemetry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Quat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TelemetryBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UdpTelemetry.cs" />
   </ItemGroup>
