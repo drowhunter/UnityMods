@@ -1,5 +1,7 @@
 ﻿using System;
 
+using UnityEngine;
+
 namespace TelemetryLibrary
 {
     internal class Maths
@@ -37,17 +39,51 @@ namespace TelemetryLibrary
             return Math.Max(Math.Min(MapRange(x, xMin, xMax, yMin, yMax), Math.Max(yMin, yMax)), Math.Min(yMin, yMax));
         }
 
-        public static PitchYawRoll QuatToPitchYawRoll(float w, float x, float y, float z)
+        public static PitchYawRoll ToPitchYawRoll(float w, float x, float y, float z)
         {
-            var yaw = (float) Math.Atan2(2 * y * w - 2 * x * z, 1 - 2 * y * y - 2 * z * z) * RAD_2_DEG;
-            var pitch = (float) Math.Atan2(2 * x * w - 2 * y * z, 1 - 2 * x * x - 2 * z * z) * RAD_2_DEG;
-            var roll = (float) Math.Asin(2 * x * y + 2 * z * w) * RAD_2_DEG;
+            var yaw = Math.Atan2(2 * (y * w - x * z), 1 - 2 * (y * y + z * z)) * RAD_2_DEG;
+            var pitch = Math.Atan2(2 * (x * w - y * z), 1 - 2 * (x * x + z * z)) * RAD_2_DEG;
+            var roll = Math.Asin(2 * (x * y + z * w)) * RAD_2_DEG;
 
-            return new PitchYawRoll(pitch, yaw, roll);
+            return new PitchYawRoll((float)pitch, (float)yaw, (float)-roll);
         }
-        
+
+        PitchYawRoll ToEulerSmooth(float w, float x, float y, float z)
+        {
+            var yaw = Math.Atan2(2 * (y * w - x * z), 1 - 2 * (y * y + z * z)) * RAD_2_DEG;
+            var pitch = Math.Atan2(2 * (x * w - y * z), 1 - 2 * (x * x + z * z)) * RAD_2_DEG;
+            var roll = Math.Asin(2 * (x * y + z * w)) * RAD_2_DEG;
+
+            pitch = LimitAngle(pitch, 90, 20);
+            roll = LimitAngle(roll, 90, 20);
+
+            return new PitchYawRoll((float)pitch, (float)yaw, (float)-roll);
+        }
+
+        /// <summary>
+        /// Limit angle to a maximum value 
+        /// </summary>
+        /// <param name="degrees"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static double LimitAngle(double degrees, float inputRange, float max)
+        {
+            double v = 0;
+            if (Math.Abs(degrees) <= inputRange)
+            {
+                v = degrees;
+            }
+            else
+            {
+                v = (180 - Math.Abs(degrees)) * (degrees < 0 ? -1 : 1);
+            }
+
+
+            return EnsureMapRange(v, -inputRange, inputRange, -max, max);
+        }
 
         
+
     }
     internal struct PitchYawRoll
     {
