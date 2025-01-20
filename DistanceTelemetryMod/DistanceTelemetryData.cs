@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-
 using UnityEngine;
 
 namespace com.drowmods.DistanceTelemetryMod
@@ -37,14 +36,9 @@ namespace com.drowmods.DistanceTelemetryMod
         public float TireBL;
         public float TireBR;
 
-        public Quat Rot;
+        public Quaternion Rot;
+
     }
 
-    internal struct  Quat 
-    {
-        public float w;
-        public float x;
-        public float y;
-        public float z;
-    }
+    
 }
