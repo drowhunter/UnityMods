@@ -1,6 +1,5 @@
 ﻿using System;
 
-using UnityEngine;
 
 namespace TelemetryLibrary
 {
@@ -29,6 +28,7 @@ namespace TelemetryLibrary
         //    return Fc * (angularVelocity.Y >= 0 ? -1 : 1);
 
         //}
+
         public static double MapRange(double x, double xMin, double xMax, double yMin, double yMax)
         {
             return yMin + (yMax - yMin) * (x - xMin) / (xMax - xMin);
@@ -39,26 +39,6 @@ namespace TelemetryLibrary
             return Math.Max(Math.Min(MapRange(x, xMin, xMax, yMin, yMax), Math.Max(yMin, yMax)), Math.Min(yMin, yMax));
         }
 
-        public static PitchYawRoll ToPitchYawRoll(float w, float x, float y, float z)
-        {
-            var yaw = Math.Atan2(2 * (y * w - x * z), 1 - 2 * (y * y + z * z)) * RAD_2_DEG;
-            var pitch = Math.Atan2(2 * (x * w - y * z), 1 - 2 * (x * x + z * z)) * RAD_2_DEG;
-            var roll = Math.Asin(2 * (x * y + z * w)) * RAD_2_DEG;
-
-            return new PitchYawRoll((float)pitch, (float)yaw, (float)-roll);
-        }
-
-        PitchYawRoll ToEulerSmooth(float w, float x, float y, float z)
-        {
-            var yaw = Math.Atan2(2 * (y * w - x * z), 1 - 2 * (y * y + z * z)) * RAD_2_DEG;
-            var pitch = Math.Atan2(2 * (x * w - y * z), 1 - 2 * (x * x + z * z)) * RAD_2_DEG;
-            var roll = Math.Asin(2 * (x * y + z * w)) * RAD_2_DEG;
-
-            pitch = LimitAngle(pitch, 90, 20);
-            roll = LimitAngle(roll, 90, 20);
-
-            return new PitchYawRoll((float)pitch, (float)yaw, (float)-roll);
-        }
 
         /// <summary>
         /// Limit angle to a maximum value 
@@ -85,17 +65,7 @@ namespace TelemetryLibrary
         
 
     }
-    internal struct PitchYawRoll
-    {
-        public float pitch;
-        public float yaw;
-        public float roll;
 
-        public PitchYawRoll(float pitch, float yaw, float roll)
-        {
-            this.pitch = pitch;
-            this.yaw = yaw;
-            this.roll = roll;
-        }
-    }
+
+    
 }
