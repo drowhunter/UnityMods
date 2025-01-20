@@ -23,7 +23,7 @@ namespace com.drowmods.DistanceTelemetryMod
     {
         const string MyGuid = "com.drowmods.DistanceTelemetryPlugin";
         const string PluginName = "DistanceTelemetryPlugin";
-        const string VersionString = "1.0.0";
+        const string VersionString = "1.4.0";
 
         static ManualLogSource Log;
 
@@ -115,6 +115,8 @@ namespace com.drowmods.DistanceTelemetryMod
             UnSubscribeFromEvents();
         }
 
+
+
         private void FixedUpdate()
         {
             if(car == null)
@@ -133,7 +135,7 @@ namespace com.drowmods.DistanceTelemetryMod
             //var localAngularVelocity = Quaternion.Inverse(rotation) * cRigidbody.angularVelocity;
             //var localVelocity = Quaternion.Inverse(rotation) * cRigidbody.velocity;
             
-
+            // same as above 
             var localAngularVelocity = cRigidbody.transform.InverseTransformDirection(cRigidbody.angularVelocity);
             var localVelocity = cRigidbody.transform.InverseTransformDirection(cRigidbody.velocity);
 
@@ -143,23 +145,20 @@ namespace com.drowmods.DistanceTelemetryMod
 
             var cForce = localVelocity.magnitude * localAngularVelocity.magnitude * Math.Sign(localAngularVelocity.y);
 
-            var pyr = rotation.ToEulerAnglesSmart(ref data.AllWheelsOnGround);
-            
+            var ypr = QuatMath.GetPitchYawRoll(cRigidbody.transform);
 
-            data.Pitch = pyr.pitch;
-            data.Yaw = pyr.yaw;            
-            data.Roll = pyr.roll;
-
-            data.AngularVelocity = localAngularVelocity;
-
+            data.Pitch = ypr.x;
+            data.Yaw = ypr.y;
+            data.Roll = ypr.z;
 
             data.KPH = car_logic.CarStats_.GetKilometersPerHour();
             
             data.cForce = cForce;
-            
+
             data.Velocity = localVelocity;            
             data.Accel = accel;
 
+           
             data.Boost = car_logic.CarDirectives_.Boost_;
             data.Grip = car_logic.CarDirectives_.Grip_;
             data.WingsOpen = car_logic.Wings_.WingsOpen_;            
@@ -175,13 +174,7 @@ namespace com.drowmods.DistanceTelemetryMod
 
             data.IsCarDestroyed = carDestroyed;
 
-            data.Rot = new Quat
-            {
-                w = rotation.w,
-                x = rotation.x,
-                y = rotation.y,
-                z = rotation.z
-            };
+            data.Rot = rotation;
 
             udp.Send(data);
             
@@ -253,52 +246,5 @@ namespace com.drowmods.DistanceTelemetryMod
             carDestroyed = true;
         }
        
-    }
-
-
-    internal static class QuatMath
-    {
-        
-
-        public static PitchYawRoll ToEulerAnglesSmart(this Quaternion q, ref bool isFixed)
-        {
-            var pyr = q.ToPitchYawRoll();
-            float roll = pyr.roll;
-            float yaw = pyr.yaw;
-            float pitch = pyr.pitch;
-
-
-            isFixed = false;
-            if(Mathf.Abs(roll) > 66 && Mathf.Abs(roll) < 104)
-            {
-                var pyu = q.ToPitchYawRollUnity();
-                
-                yaw = pyu.yaw;
-                pitch = pyu.pitch;
-                isFixed = true;
-            }
-            
-            return new PitchYawRoll(pitch, yaw, roll);
-        }
-
-        
-
-        public static PitchYawRoll ToPitchYawRoll(this Quaternion q)
-        {
-            var yaw =   Mathf.Atan2(2.0f * (q.y * q.w - q.x * q.z), 1 - 2 * (q.y * q.y + q.z * q.z)) * Mathf.Rad2Deg;
-            var pitch = Mathf.Atan2(2.0f * (q.x * q.w - q.y * q.z), 1 - 2 * (q.x * q.x + q.z * q.z)) * Mathf.Rad2Deg;
-            var roll =  Mathf.Asin (2.0f * (q.x * q.y + q.z * q.w)) * Mathf.Rad2Deg;
-
-            return new PitchYawRoll(pitch, yaw, -roll);
-        }
-
-        public static PitchYawRoll ToPitchYawRollUnity(this Quaternion q)
-        {
-            return new PitchYawRoll(
-                Maths.HemiCircle(q.eulerAngles.x),
-                Maths.HemiCircle(q.eulerAngles.y),
-                -Maths.HemiCircle(q.eulerAngles.z)
-            );
-        }        
     }
 }
