@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Net;
 using System.Numerics;
@@ -16,6 +17,27 @@ namespace MmfReader
 
         static void Main(string[] args)
         {
+
+            var a = Vector3.Normalize(new Vector3(-1, 0, -1));
+            var b = Vector3.Normalize(new Vector3(0, 0, -1));
+
+            var adotb =Vector3.Dot(a, b);
+
+            var aa = Math.Acos(adotb) * 57.29578f;
+
+            var mina = Math.Min(adotb, -1);
+            var maxa = Math.Max(mina, 1);
+
+
+            var angle =  Math.Acos(maxa) * 57.29578f;
+
+            Console.WriteLine(
+                $"Angle between {a} and {b} is {aa} degrees");
+
+
+
+            
+
 
             //var inputs = GetInputs<DistanceTelemetryData>(default).ToImmutableArray();
             var len = Guid.NewGuid().ToString("B").Length;
@@ -44,9 +66,9 @@ namespace MmfReader
                     cs.LogLine(telem, _ => _.IsCarIsActive, _ => _.IsCarEnabled, _ => _.IsCarDestroyed);
                     Console.WriteLine();
 
-                    cs.LogLine(telem, _ => _.Pitch, _ => _.Yaw, _ => _.Roll);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.Rotation), _ => _.Rotation.X, _ => _.Rotation.Y, _ => _.Rotation.Z);
 
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.Rot), _ => _.Rot.w, _ => _.Rot.x, _ => _.Rot.y, _ => _.Rot.z);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.Orientation), _ => _.Orientation.w, _ => _.Orientation.x, _ => _.Orientation.y, _ => _.Orientation.z);
 
 
                     cs.LogLine(telem, _ => _.KPH, _ => _.cForce, _ => _.IsGrav);
@@ -169,6 +191,7 @@ namespace MmfReader
         
     }
 
+    
     [StructLayout(LayoutKind.Sequential)]
     internal struct DistanceTelemetryData
     {
@@ -176,9 +199,7 @@ namespace MmfReader
         public bool IsRacing;
         public float KPH;
 
-        public float Pitch;
-        public float Yaw;
-        public float Roll;
+        public Vector3 Rotation;
 
         public Vector3 AngularVelocity;
 
@@ -202,14 +223,15 @@ namespace MmfReader
         public float TireBL;
         public float TireBR;
 
-        public Quat Rot;
+        public Quat Orientation;
+
     }
 
     internal struct Quat
-    {
-        public float w;
+    {   
         public float x;
         public float y;
         public float z;
+        public float w;
     }
 }
