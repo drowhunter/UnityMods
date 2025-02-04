@@ -120,14 +120,12 @@ namespace com.drowmods.DistanceTelemetryMod
             UnSubscribeFromEvents();
         }
 
-        
-        float _yaw = 0f, _pitch = 0, _roll = 0;
+
+        float _yaw = 0f;
 
         private void reset()
         {
             _yaw = 0;
-            _pitch = 0;
-            _roll = 0;
         }
 
         private void FixedUpdate()
@@ -145,44 +143,22 @@ namespace com.drowmods.DistanceTelemetryMod
             
             Quaternion rotation = cRigidbody.transform.rotation;
 
-            var localFwd = Quaternion.Inverse(rotation) * transform.forward;
-
-            //var localVelocity = Quaternion.Inverse(rotation) * cRigidbody.velocity;
             
-            // same as above 
+            
             var localAngularVelocity = cRigidbody.transform.InverseTransformDirection(cRigidbody.angularVelocity);
-            var localVelocity = cRigidbody.transform.InverseTransformDirection(cRigidbody.velocity);
-
-
-            //prevAV += (localVelocity - previousLocalVelocity) * Time.fixedDeltaTime * Mathf.Rad2Deg;
+            var localVelocity = cRigidbody.transform.InverseTransformDirection(cRigidbody.velocity);            
 
             Vector3 accel = (localVelocity - previousLocalVelocity) / Time.fixedDeltaTime / 9.81f;
             _yaw += localAngularVelocity.y * Time.fixedDeltaTime; ;
-
-           
-
-            
-
-            //var dist = localAngularVelocity * Time.fixedDeltaTime * Mathf.Rad2Deg;
-            //_pitch += dist.x;
-            //_yaw += dist.y;
-            //_roll += dist.z;
-            //prevAV.x += diff.x * Time.fixedDeltaTime * Mathf.Rad2Deg;
-            //prevAV.y += diff.y * Time.fixedDeltaTime * Mathf.Rad2Deg;
-            //prevAV.z += diff.z * Time.fixedDeltaTime * Mathf.Rad2Deg;
-
-
-            //Vector3.Angle(prevAV, localAngularVelocity);
-
 
 
             previousLocalVelocity = localVelocity;
 
             var cForce = localVelocity.magnitude * localAngularVelocity.magnitude * Math.Sign(localAngularVelocity.y);
 
-            //data.Rotation = new Vector3(_pitch , _yaw, _roll);
-            var ypr = QuatMath.GetPitchYawRollImpressive(cRigidbody.transform);
-            //data.Rotation = QuatMath.StableYawAndRoll(cRigidbody.transform);
+            
+            var ypr = QuatMath.GetEulerAngles(cRigidbody.transform);
+            
             data.Rotation = new Vector3(ypr.x, Maths.HemiCircle(_yaw * Mathf.Rad2Deg % 360), ypr.z);
 
 
@@ -192,7 +168,7 @@ namespace com.drowmods.DistanceTelemetryMod
 
             data.AngularVelocity = localAngularVelocity;
             data.Velocity = localVelocity;
-            data.Accel = localFwd;// accel;
+            data.Accel = accel;
 
            
             data.Boost = car_logic.CarDirectives_.Boost_;
@@ -207,8 +183,8 @@ namespace com.drowmods.DistanceTelemetryMod
 
             
 
-            data.TireFL = CalcSuspension(car_logic.CarStats_.WheelFL_, 0.4f);
-            data.TireFR = CalcSuspension(car_logic.CarStats_.WheelFR_, 0.4f);
+            data.TireFL = CalcSuspension(car_logic.CarStats_.WheelFL_, 0.5f);
+            data.TireFR = CalcSuspension(car_logic.CarStats_.WheelFR_, 0.5f);
             data.TireBL = CalcSuspension(car_logic.CarStats_.wheelBL_, grip: 0.2f);
             data.TireBR = CalcSuspension(car_logic.CarStats_.WheelBR_, grip: 0.2f);
 
@@ -283,6 +259,7 @@ namespace com.drowmods.DistanceTelemetryMod
         private void LocalVehicle_Destroyed(Death.Data data)
         {
             Echo("LocalVehicle_Destroyed", "Destroyed");
+            reset();
             carDestroyed = true;
         }
 
