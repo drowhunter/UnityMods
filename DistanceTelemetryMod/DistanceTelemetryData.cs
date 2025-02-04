@@ -10,9 +10,7 @@ namespace com.drowmods.DistanceTelemetryMod
         public bool IsRacing;
         public float KPH;
 
-        public float Pitch;
-        public float Yaw;        
-        public float Roll;
+        public Vector3 Rotation;
 
         public Vector3 AngularVelocity;
 
@@ -36,7 +34,7 @@ namespace com.drowmods.DistanceTelemetryMod
         public float TireBL;
         public float TireBR;
 
-        public Quaternion Rot;
+        public Quaternion Orientation;
 
     }
 
