@@ -6,7 +6,7 @@ using System.IO.MemoryMappedFiles;
 
 using System.Runtime.InteropServices;
 
-namespace TelemetryLibrary
+namespace TelemetryLib.Telemetry
 {
     internal class MmfTelemetryConfig
     {

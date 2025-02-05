@@ -58,7 +58,6 @@
     <Compile Include="DistanceTelemetryData.cs" />
     <Compile Include="DistanceTelemetryPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuatMath.cs" />
   </ItemGroup>
   <Import Project="..\TelemetryLibrary\TelemetryLibrary.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
