@@ -11,9 +11,12 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MmfTelemetry.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Quat.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TelemetryBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UdpTelemetry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\MmfTelemetry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QuaternionConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\UdpTelemetry.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Telemetry\" />
   </ItemGroup>
 </Project>

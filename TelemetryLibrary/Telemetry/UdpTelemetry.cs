@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 #endif
 
-namespace TelemetryLibrary
+namespace TelemetryLib.Telemetry
 {
     internal class UdpTelemetryConfig
     {

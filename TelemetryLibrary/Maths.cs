@@ -61,8 +61,11 @@ namespace TelemetryLibrary
 
             return EnsureMapRange(v, -inputRange, inputRange, -max, max);
         }
-
         
+        public static float CopySign(float x, float y)
+        {
+            return Math.Sign(y) * Math.Abs(x);
+        }
 
     }
 

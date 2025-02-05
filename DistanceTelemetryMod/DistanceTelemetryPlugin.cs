@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 
 using Events;
@@ -12,6 +13,8 @@ using System;
 using System.Net;
 using System.Runtime.InteropServices;
 
+using TelemetryLib.Telemetry;
+
 using TelemetryLibrary;
 
 using UnityEngine;
@@ -23,7 +26,7 @@ namespace com.drowmods.DistanceTelemetryMod
     {
         const string MyGuid = "com.drowmods.DistanceTelemetryPlugin";
         const string PluginName = "DistanceTelemetryPlugin";
-        const string VersionString = "1.4.0";
+        const string VersionString = "1.5.1";
 
         static ManualLogSource Log;
 
@@ -64,14 +67,22 @@ namespace com.drowmods.DistanceTelemetryMod
             Log?.LogInfo(string.Format("[{0}] {1}", caller, message));
         }
 
-        
+        public static ConfigEntry<bool> MaxSteeringMod { get; set; }
+
+
+
         private void Awake()
         {
             //harmony.PatchAll();
 
             Log = Logger;
 
+
+
             Echo(nameof(Awake), string.Format("{0} {1} loaded.", PluginName, VersionString));
+            ConfigDefinition configDefinition = new ConfigDefinition("General", "Max Steering Mod", "Set the steering angle to the maximum value");
+            MaxSteeringMod = Config.Bind("General", "Max Steering Mod", false, "Set the steering angle to the maximum value");
+
 
             udp = new UdpTelemetry<DistanceTelemetryData>(new UdpTelemetryConfig
             {
@@ -149,17 +160,25 @@ namespace com.drowmods.DistanceTelemetryMod
             var localVelocity = cRigidbody.transform.InverseTransformDirection(cRigidbody.velocity);            
 
             Vector3 accel = (localVelocity - previousLocalVelocity) / Time.fixedDeltaTime / 9.81f;
-            _yaw += localAngularVelocity.y * Time.fixedDeltaTime; ;
+            
+            _yaw += localAngularVelocity.y * Time.fixedDeltaTime;
 
 
             previousLocalVelocity = localVelocity;
 
             var cForce = localVelocity.magnitude * localAngularVelocity.magnitude * Math.Sign(localAngularVelocity.y);
 
-            
-            var ypr = QuatMath.GetEulerAngles(cRigidbody.transform);
-            
-            data.Rotation = new Vector3(ypr.x, Maths.HemiCircle(_yaw * Mathf.Rad2Deg % 360), ypr.z);
+            //var yaw = Vector3.Angle(new Vector3(0, transform.forward.y, transform.forward.z), transform.forward);
+
+            var yaw = Maths.HemiCircle(_yaw * Mathf.Rad2Deg % 360);
+
+            float pitch = Mathf.Sign(transform.forward.y) * Vector3.Angle(new Vector3(transform.forward.x, 0, transform.forward.z), transform.forward);//, transform.forward.y);
+
+            float roll = Maths.CopySign(Vector3.Angle(new Vector3(transform.right.x, 0, transform.right.z), transform.right), transform.right.y);
+
+
+
+            data.Rotation = new Vector3(pitch, yaw, roll);
 
 
             data.KPH = car_logic.CarStats_.GetKilometersPerHour();
@@ -199,15 +218,15 @@ namespace com.drowmods.DistanceTelemetryMod
 
             float CalcSuspension(NitronicCarWheel wheel, float? maxAngle = null, float? grip = null)
             {
-                if(maxAngle != null)
+                if (maxAngle != null && MaxSteeringMod.Value)
                 {
                     wheel.fullSteerAngle_ = maxAngle.Value;
                 }
 
-                if(grip != null)
-                {
-                    wheel.grip_ = grip.Value;
-                }
+                //if (grip != null)
+                //{
+                //    wheel.grip_ = grip.Value;
+                //}
 
                 var pos = Math.Abs(wheel.hubTrans_.localPosition.y);
                 var suspension = wheel.SuspensionDistance_;

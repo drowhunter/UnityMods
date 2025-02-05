@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 #endif
-namespace TelemetryLibrary
+namespace TelemetryLib.Telemetry
 {
     internal interface ITelemetry<TData, TConfig> 
         where TData : struct 
