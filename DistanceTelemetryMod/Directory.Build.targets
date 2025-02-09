@@ -1,0 +1,13 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>        
+		<GameDir>E:\SteamLibrary\SteamApps\common\Distance\</GameDir>		
+    </PropertyGroup>
+     
+    <Target Name="CreateAndCopyToGameDir" AfterTargets="Build">
+        <MakeDir Directories="$(GameDir)BepInEx\plugins\$(TargetName)" Condition="!Exists('$(GameDir)BepInEx\plugins\$(TargetName)')" />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GameDir)BepInEx\plugins\$(TargetName)" />
+        <Message Text="[$(ProjectName)]-[CreateAndCopyToGameDir] Copied $(TargetPath) to $(GameDir)BepInEx\plugins\$(TargetName)" Importance="High" />
+    </Target>
+    
+	
+</Project>

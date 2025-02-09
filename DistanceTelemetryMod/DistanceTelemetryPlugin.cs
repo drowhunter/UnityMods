@@ -11,7 +11,6 @@ using Events.RaceEnd;
 
 using System;
 using System.Net;
-using System.Runtime.InteropServices;
 
 using TelemetryLib.Telemetry;
 
@@ -26,7 +25,7 @@ namespace com.drowmods.DistanceTelemetryMod
     {
         const string MyGuid = "com.drowmods.DistanceTelemetryPlugin";
         const string PluginName = "DistanceTelemetryPlugin";
-        const string VersionString = "1.5.1";
+        const string VersionString = "1.5.2";
 
         static ManualLogSource Log;
 
