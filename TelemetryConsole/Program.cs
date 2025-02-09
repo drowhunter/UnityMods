@@ -1,12 +1,10 @@
-﻿using System.Collections.Immutable;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Net;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 
-using TelemetryLibrary;
+using TelemetryLib.Telemetry;
 
 namespace MmfReader
 {
@@ -44,9 +42,9 @@ namespace MmfReader
                     cs.LogLine(telem, _ => _.IsCarIsActive, _ => _.IsCarEnabled, _ => _.IsCarDestroyed);
                     Console.WriteLine();
 
-                    cs.LogLine(telem, _ => _.Pitch, _ => _.Yaw, _ => _.Roll);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.Rotation), _ => _.Rotation.X, _ => _.Rotation.Y, _ => _.Rotation.Z);
 
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.Rot), _ => _.Rot.w, _ => _.Rot.x, _ => _.Rot.y, _ => _.Rot.z);
+                    cs.LogLine(telem, nameof(DistanceTelemetryData.Orientation), _ => _.Orientation.w, _ => _.Orientation.x, _ => _.Orientation.y, _ => _.Orientation.z);
 
 
                     cs.LogLine(telem, _ => _.KPH, _ => _.cForce, _ => _.IsGrav);
@@ -176,9 +174,7 @@ namespace MmfReader
         public bool IsRacing;
         public float KPH;
 
-        public float Pitch;
-        public float Yaw;
-        public float Roll;
+        public Vector3 Rotation;
 
         public Vector3 AngularVelocity;
 
@@ -202,7 +198,7 @@ namespace MmfReader
         public float TireBL;
         public float TireBR;
 
-        public Quat Rot;
+        public Quat Orientation;
     }
 
     internal struct Quat

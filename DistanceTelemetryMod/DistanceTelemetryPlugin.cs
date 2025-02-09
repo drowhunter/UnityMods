@@ -171,9 +171,9 @@ namespace com.drowmods.DistanceTelemetryMod
 
             var yaw = Maths.HemiCircle(_yaw * Mathf.Rad2Deg % 360);
 
-            float pitch = Mathf.Sign(transform.forward.y) * Vector3.Angle(new Vector3(transform.forward.x, 0, transform.forward.z), transform.forward);//, transform.forward.y);
+            float pitch = Maths.CopySign(Vector3.Angle(new Vector3(cRigidbody.transform.forward.x, 0, cRigidbody.transform.forward.z), cRigidbody.transform.forward), cRigidbody.transform.forward.y);
 
-            float roll = Maths.CopySign(Vector3.Angle(new Vector3(transform.right.x, 0, transform.right.z), transform.right), transform.right.y);
+            float roll =  Maths.CopySign(Vector3.Angle(new Vector3(cRigidbody.transform.right.x  , 0, cRigidbody.transform.right.z  ), cRigidbody.transform.right),   cRigidbody.transform.right.y);
 
 
 
