@@ -61,8 +61,5 @@
   </ItemGroup>
   <Import Project="..\TelemetryLibrary\TelemetryLibrary.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>mkdir "E:\SteamLibrary\SteamApps\common\Distance\BepInEx\plugins\$(TargetName)"
-copy /Y "$(TargetPath)" "E:\SteamLibrary\SteamApps\common\Distance\BepInEx\plugins\$(TargetName)"</PostBuildEvent>
-  </PropertyGroup>
+  
 </Project>
