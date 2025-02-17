@@ -7,6 +7,10 @@
     <Nullable>disable</Nullable>	
   </PropertyGroup>
 
-  <Import Project="..\TelemetryLibrary\TelemetryLibrary.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\DistanceTelemetryMod\DistanceTelemetryMod.csproj" />
+  </ItemGroup>
+
+  
 
 </Project>

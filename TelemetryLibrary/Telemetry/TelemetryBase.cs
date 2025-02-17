@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 #endif
 namespace TelemetryLib.Telemetry
 {
-    internal interface ITelemetry<TData, TConfig> 
+    public interface ITelemetry<TData, TConfig> 
         where TData : struct 
         where TConfig : class, new()
     {
@@ -24,7 +24,7 @@ namespace TelemetryLib.Telemetry
 #endif
     }
 
-    internal abstract class TelemetryBase<TData, TConfig> : ITelemetry<TData, TConfig>, IDisposable
+    public abstract class TelemetryBase<TData, TConfig> : ITelemetry<TData, TConfig>, IDisposable
         where TData : struct
         where TConfig : class, new()
     {

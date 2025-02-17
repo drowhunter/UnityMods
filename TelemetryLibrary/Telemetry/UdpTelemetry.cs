@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TelemetryLib.Telemetry
 {
-    internal class UdpTelemetryConfig
+    public class UdpTelemetryConfig
     {
         public IPEndPoint SendAddress { get; set; }
 
@@ -17,7 +17,7 @@ namespace TelemetryLib.Telemetry
         public int ReceiveTimeout { get; set; } = 0;
     }
 
-    internal class UdpTelemetry<TData> : TelemetryBase<TData, UdpTelemetryConfig>
+    public class UdpTelemetry<TData> : TelemetryBase<TData, UdpTelemetryConfig>
         where TData : struct
     {
         private static UdpClient udpClient;

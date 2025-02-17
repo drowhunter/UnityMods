@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
-
 using Events;
 using Events.Car;
 using Events.Game;
@@ -18,15 +17,11 @@ using TelemetryLibrary;
 
 using UnityEngine;
 
-namespace com.drowmods.DistanceTelemetryMod
+namespace com.drowhunter.DistanceTelemetryMod
 {
-    [BepInPlugin(MyGuid, PluginName, VersionString)]
+    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     public class DistanceTelemetryPlugin : BaseUnityPlugin
     {
-        const string MyGuid = "com.drowmods.DistanceTelemetryPlugin";
-        const string PluginName = "DistanceTelemetryPlugin";
-        const string VersionString = "1.5.2";
-
         static ManualLogSource Log;
 
         
@@ -48,7 +43,7 @@ namespace com.drowmods.DistanceTelemetryMod
             {
                 if(_car == null)
                 {                    
-                    _car = G.Sys?.PlayerManager_?.localPlayers_?[0]?.playerData_?.localCar_;  
+                    _car = G.Sys?.PlayerManager_?.LocalPlayers_?[0]?.playerData_?.LocalCar_;  
                     if(_car != null)
                     {
                         SubscribeToEvents();
@@ -78,7 +73,7 @@ namespace com.drowmods.DistanceTelemetryMod
 
 
 
-            Echo(nameof(Awake), string.Format("{0} {1} loaded.", PluginName, VersionString));
+            Echo(nameof(Awake), string.Format("{0} {1} loaded.", MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION));
             ConfigDefinition configDefinition = new ConfigDefinition("General", "Max Steering Mod", "Set the steering angle to the maximum value");
             MaxSteeringMod = Config.Bind("General", "Max Steering Mod", false, "Set the steering angle to the maximum value");
 
@@ -148,7 +143,7 @@ namespace com.drowmods.DistanceTelemetryMod
             data.IsCarEnabled = car.ExistsAndIsEnabled();
 
             var cRigidbody = car.GetComponent<Rigidbody>();
-            var car_logic = car.carLogic_;
+            
             
             
             Quaternion rotation = cRigidbody.transform.rotation;
@@ -167,28 +162,34 @@ namespace com.drowmods.DistanceTelemetryMod
 
             var cForce = localVelocity.magnitude * localAngularVelocity.magnitude * Math.Sign(localAngularVelocity.y);
 
-            //var yaw = Vector3.Angle(new Vector3(0, transform.forward.y, transform.forward.z), transform.forward);
-
-            var yaw = Maths.HemiCircle(_yaw * Mathf.Rad2Deg % 360);
-
-            float pitch = Maths.CopySign(Vector3.Angle(new Vector3(cRigidbody.transform.forward.x, 0, cRigidbody.transform.forward.z), cRigidbody.transform.forward), cRigidbody.transform.forward.y);
-
-            float roll =  Maths.CopySign(Vector3.Angle(new Vector3(cRigidbody.transform.right.x  , 0, cRigidbody.transform.right.z  ), cRigidbody.transform.right),   cRigidbody.transform.right.y);
 
 
+            data.Yaw = Maths.HemiCircle(_yaw * Mathf.Rad2Deg % 360);
 
-            data.Rotation = new Vector3(pitch, yaw, roll);
+            data.Pitch = Maths.CopySign(Vector3.Angle(new Vector3(cRigidbody.transform.forward.x, 0, cRigidbody.transform.forward.z), cRigidbody.transform.forward), cRigidbody.transform.forward.y);
 
+            data.Roll = Maths.CopySign(Vector3.Angle(new Vector3(cRigidbody.transform.right.x  , 0, cRigidbody.transform.right.z  ), cRigidbody.transform.right),   cRigidbody.transform.right.y);
+
+
+            var car_logic = car.carLogic_;
 
             data.KPH = car_logic.CarStats_.GetKilometersPerHour();
             
             data.cForce = cForce;
 
-            data.AngularVelocity = localAngularVelocity;
-            data.Velocity = localVelocity;
-            data.Accel = accel;
+            data.AngularVelocityX = localAngularVelocity.x;
+            data.AngularVelocityY = localAngularVelocity.y;
+            data.AngularVelocityZ = localAngularVelocity.z;
 
-           
+            data.VelocityX = localVelocity.x;
+            data.VelocityY = localVelocity.y;
+            data.VelocityZ = localVelocity.z;
+
+            data.AccelX = accel.x;
+            data.AccelY = accel.y;
+            data.AccelZ = accel.z;
+
+
             data.Boost = car_logic.CarDirectives_.Boost_;
             data.Grip = car_logic.CarDirectives_.Grip_;
             data.WingsOpen = car_logic.Wings_.WingsOpen_;            
@@ -210,9 +211,14 @@ namespace com.drowmods.DistanceTelemetryMod
 
             data.IsCarDestroyed = carDestroyed;
 
-            data.Orientation = new Quaternion(cRigidbody.transform.forward.x, cRigidbody.transform.rotation.y, cRigidbody.transform.rotation.z, Input.GetAxis("Horizontal")); // rotation;
+            data.OrientationX = cRigidbody.transform.forward.x;
+            data.OrientationY = cRigidbody.transform.rotation.y;
+            data.OrientationZ = cRigidbody.transform.rotation.z;
+            data.OrientationW = cRigidbody.transform.rotation.w;
 
             udp.Send(data);
+            
+
             
 
             float CalcSuspension(NitronicCarWheel wheel, float? maxAngle = null, float? grip = null)
@@ -233,10 +239,7 @@ namespace com.drowmods.DistanceTelemetryMod
 
                 var frac = pos / suspension;
 
-                var s = Maths.EnsureMapRange(pos, 0, suspension, 1, -1);
-
-                return (float)s;//(s *  (wheel.contact_.IsInContact_ ? 1 : 0 ));
-
+                return (float)Maths.EnsureMapRange(pos, 0, suspension, 1, -1);
             }
 
         }
@@ -245,7 +248,7 @@ namespace com.drowmods.DistanceTelemetryMod
         private void SubscribeToEvents()
         {
             Echo("SubscribeToEvents", "Subscribing to player events");
-            playerEvents = car.playerDataLocal_.Events_;
+            playerEvents = car.PlayerDataLocal_.Events_;
             
             playerEvents.Subscribe(new InstancedEvent<Impact.Data>.Delegate(LocalVehicle_Collided));
             playerEvents.Subscribe(new InstancedEvent<Death.Data>.Delegate(LocalVehicle_Destroyed));

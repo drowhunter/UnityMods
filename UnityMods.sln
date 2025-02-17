@@ -41,7 +41,7 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TelemetryLibrary\TelemetryLibrary.projitems*{2cf30d2b-eeb0-4809-9c92-468804a2e52f}*SharedItemsImports = 5
-		TelemetryLibrary\TelemetryLibrary.projitems*{afc95631-2530-473a-a1b8-39321336390d}*SharedItemsImports = 4
+		TelemetryLibrary\TelemetryLibrary.projitems*{afc95631-2530-473a-a1b8-39321336390d}*SharedItemsImports = 5
 		TelemetryLibrary\TelemetryLibrary.projitems*{b9fca8df-c60f-4a9c-aad0-f7ed71e0adc5}*SharedItemsImports = 4
 		TelemetryLibrary\TelemetryLibrary.projitems*{eeb444e9-0b1f-467d-b01c-edba291bc941}*SharedItemsImports = 13
 	EndGlobalSection

@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace TelemetryLib.Telemetry
 {
-    internal class MmfTelemetryConfig
+    public class MmfTelemetryConfig
     {
         public string Name { get; set; } = "MmfTelemetry";        
     }

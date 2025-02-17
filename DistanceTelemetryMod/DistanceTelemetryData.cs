@@ -1,23 +1,31 @@
 ﻿using System.Runtime.InteropServices;
-using UnityEngine;
 
-namespace com.drowmods.DistanceTelemetryMod
+namespace com.drowhunter.DistanceTelemetryMod
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct DistanceTelemetryData
+    public struct DistanceTelemetryData
     {
-        public bool GamePaused;        
+        public bool GamePaused;
         public bool IsRacing;
         public float KPH;
 
-        public Vector3 Rotation;
+        public float Pitch;
+        public float Yaw;
+        public float Roll;
 
-        public Vector3 AngularVelocity;
+        public float AngularVelocityX;
+        public float AngularVelocityY;
+        public float AngularVelocityZ;
 
         public float cForce;
 
-        public Vector3 Velocity;        
-        public Vector3 Accel;
+        public float VelocityX;
+        public float VelocityY;
+        public float VelocityZ;
+
+        public float AccelX;
+        public float AccelY;
+        public float AccelZ;
 
         public bool Boost;
         public bool Grip;
@@ -26,7 +34,7 @@ namespace com.drowmods.DistanceTelemetryMod
         public bool IsCarEnabled;
         public bool IsCarIsActive;
         public bool IsCarDestroyed;
-        public bool AllWheelsOnGround;           
+        public bool AllWheelsOnGround;
         public bool IsGrav;
 
         public float TireFL;
@@ -34,8 +42,10 @@ namespace com.drowmods.DistanceTelemetryMod
         public float TireBL;
         public float TireBR;
 
-        public Quaternion Orientation;
-
+        public float OrientationX;
+        public float OrientationY;
+        public float OrientationZ;
+        public float OrientationW;
     }
 
     

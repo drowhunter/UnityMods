@@ -1,8 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿using com.drowhunter.DistanceTelemetryMod;
+
+using System.Linq.Expressions;
 using System.Net;
-using System.Numerics;
 using System.Reflection;
-using System.Runtime.InteropServices;
 
 using TelemetryLib.Telemetry;
 
@@ -42,17 +42,17 @@ namespace MmfReader
                     cs.LogLine(telem, _ => _.IsCarIsActive, _ => _.IsCarEnabled, _ => _.IsCarDestroyed);
                     Console.WriteLine();
 
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.Rotation), _ => _.Rotation.X, _ => _.Rotation.Y, _ => _.Rotation.Z);
+                    cs.LogLine(telem,  _ => _.Pitch, _ => _.Yaw, _ => _.Roll);
 
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.Orientation), _ => _.Orientation.w, _ => _.Orientation.x, _ => _.Orientation.y, _ => _.Orientation.z);
+                    cs.LogLine(telem, _ => _.OrientationX, _ => _.OrientationY, _ => _.OrientationZ, _ => _.OrientationW);
 
 
                     cs.LogLine(telem, _ => _.KPH, _ => _.cForce, _ => _.IsGrav);
                     Console.WriteLine();
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.AngularVelocity), _ => _.AngularVelocity.X, _ => _.AngularVelocity.Y, _ => _.AngularVelocity.Z);
+                    cs.LogLine(telem, _ => _.AngularVelocityX, _ => _.AngularVelocityY, _ => _.AngularVelocityZ);
 
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.Velocity), _ => _.Velocity.X, _ => _.Velocity.Y, _ => _.Velocity.Z);
-                    cs.LogLine(telem, nameof(DistanceTelemetryData.Accel), _ => _.Accel.X, _ => _.Accel.Y, _ => _.Accel.Z);
+                    cs.LogLine(telem, _ => _.VelocityX, _ => _.VelocityY, _ => _.VelocityZ);
+                    cs.LogLine(telem, _ => _.AccelX, _ => _.AccelY, _ => _.AccelZ);
                     cs.LogLine(telem, _ => _.Boost, _ => _.Grip, _ => _.WingsOpen);
                     
                     cs.LogLine(telem, _ => _.AllWheelsOnGround);
@@ -167,45 +167,7 @@ namespace MmfReader
         
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct DistanceTelemetryData
-    {
-        public bool GamePaused;
-        public bool IsRacing;
-        public float KPH;
+    
 
-        public Vector3 Rotation;
-
-        public Vector3 AngularVelocity;
-
-        public float cForce;
-
-        public Vector3 Velocity;
-        public Vector3 Accel;
-
-        public bool Boost;
-        public bool Grip;
-        public bool WingsOpen;
-
-        public bool IsCarEnabled;
-        public bool IsCarIsActive;
-        public bool IsCarDestroyed;
-        public bool AllWheelsOnGround;
-        public bool IsGrav;
-
-        public float TireFL;
-        public float TireFR;
-        public float TireBL;
-        public float TireBR;
-
-        public Quat Orientation;
-    }
-
-    internal struct Quat
-    {
-        public float w;
-        public float x;
-        public float y;
-        public float z;
-    }
+    
 }
